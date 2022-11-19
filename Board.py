@@ -94,3 +94,8 @@ class Board:
                                 startRow, startCol, boxSize))
                 
         return result
+    
+    @staticmethod
+    def getEmptyBoard():
+        return [[0]*9 for _ in range(9)]
+

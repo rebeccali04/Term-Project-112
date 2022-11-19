@@ -11,7 +11,7 @@ def screen1_onScreenStart(app):
     app.color = 'gold'
 
 def screen1_onKeyPress(app, key):
-    if key == 's': setActiveScreen('screen2')
+    if key == 's': setActiveScreen('boardScreen')
     elif key == 'c': app.color = 'navy' if (app.color == 'gold') else 'gold'
 
 def screen1_redrawAll(app):
