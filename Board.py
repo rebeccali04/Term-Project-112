@@ -59,7 +59,10 @@ class Board:
         return False
 
     @staticmethod
-    def breakToFlattenedBox(board, startRow, startCol, boxSize):
+    def breakToFlattenedBox(board, startRow, startCol, boxSize=3):
+        #given a starting row col location, returns a 1d list of the box 
+        # region of the square with side length of the boxsize
+        #non mutating
         box= []
         for row in range(startRow, startRow+boxSize):
             rowList = []

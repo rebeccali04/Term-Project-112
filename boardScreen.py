@@ -92,11 +92,43 @@ def boardScreen_DrawSectionBoxes(app):
 
 def boardScreen_drawCell(app, row, col):
     cellLeft, cellTop = getCellLeftTop(app, row, col)
+    
     cellWidth, cellHeight = getCellSize(app)
-    color = 'cyan' if (row, col) == app.selectedCell else None
+    color = getCellColor(app, row, col)
     drawRect(cellLeft, cellTop, cellWidth, cellHeight,
              fill=color, border= app.lineColor,
              borderWidth=app.cellBorderWidth)
+
+def getCellColor(app, row, col):
+    selectedRow, selectedCol = app.selectedCell
+    color = None
+    if (row, col) == app.selectedCell:
+        color = rgb(183, 202, 241)
+    elif row == selectedRow or col == selectedCol:
+        color = rgb (217, 231, 241)
+    #color the box
+    elif isInBox(app, row,col):
+        color = rgb (217, 231, 241)#same as prev
+    return color
+
+def getSelectBoxRegion(app, row,col):
+    #find startRow and startCol
+    boxSize =3
+    startRow = row//boxSize *3
+    startCol = col//boxSize *3
+    return startRow, startCol
+    
+
+
+def isInBox(app, row,col):
+    #given arb row and col, determine if should be highlighted
+    selectedRow, selectedCol = app.selectedCell
+    startRow, startCol = getSelectBoxRegion(app, selectedRow, selectedCol)
+    #if inside the box of this
+    return startRow<=row<startRow+3 and startCol<=col<startCol+3
+        
+
+
 
 def getCellLeftTop(app, row, col):
     cellWidth, cellHeight = getCellSize(app)
