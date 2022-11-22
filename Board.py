@@ -1,13 +1,16 @@
 import copy
+from readingInputs import*
 class Board:
     #pass in a 2d list of the board
     def __init__(self, board):
         self.rows = 9
         self.cols = 9
-        self.currBoard = board
+        self.orginalBoard = copy.deepcopy(board) #stores og board
+        self.userBoard = board
+        self.solveBoard()
         
     def solveBoard(self):
-        board = copy.deepcopy(self.board)
+        board = copy.deepcopy(self.orginalBoard)
         self.solvedBoard = Board.solveBoardHelper(board)
 
     @staticmethod
@@ -102,3 +105,12 @@ class Board:
     def getEmptyBoard():
         return [[0]*9 for _ in range(9)]
 
+
+
+#test cases
+def testBoardSolver():
+    print('testing board', end ='done')
+    board = Board(getBoardIn2dList('easy-01.png.txt'))
+    assert board.solvedBoard == getBoardIn2dList('easy-01-solution.png-solution.txt')
+     
+testBoardSolver()

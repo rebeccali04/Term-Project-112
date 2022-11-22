@@ -4,17 +4,21 @@ except: from cmu_graphics import *
 from runAppWithScreens import *
 from Board import Board
 import math
+from readingInputs import *
 ##################################
-# Screen2
+# boardScreen
 ##################################
 
 #Todo
 # cell objects?
+# inputing numbers function
+
 
 
 def boardScreen_onScreenStart(app):
-    app.currBoard = Board.getEmptyBoard()
-    app.currBoard[2][3] =7
+    app.currBoard = Board(getBoardIn2dList('easy-01.png.txt'))
+    print(app.currBoard.solvedBoard)
+    app.currDisplayBoard = app.currBoard.userBoard
     app.rows = 9
     app.cols = 9
     app.boardLeft = app.width*0.1
@@ -29,7 +33,10 @@ def boardScreen_onScreenStart(app):
 
 def boardScreen_onKeyPress(app, key):
     if key == 's': setActiveScreen('screen1')
-
+    if key == 'z': 
+        app.currDisplayBoard = app.currBoard.solvedBoard
+    if key == 'x': 
+        app.currDisplayBoard = app.currBoard.userBoard
 def boardScreen_onMousePress(app,mouseX, mouseY):
     selectedCell = getCell(app, mouseX, mouseY)
     if selectedCell != None:
@@ -48,7 +55,7 @@ def boardScreen_redrawAll(app):
     boardScreen_drawBoard(app)
     boardScreen_drawBoardBorder(app)
     boardScreen_DrawSectionBoxes(app)
-    drawSudokuNumbers(app, app.currBoard)
+    drawSudokuNumbers(app, app.currDisplayBoard)
 
 
     ########################################################
@@ -72,12 +79,14 @@ def boardScreen_drawBoard(app):
     for row in range(app.rows):
         for col in range(app.cols):
             boardScreen_drawCell(app, row, col)
+#modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
 def boardScreen_drawBoardBorder(app):
   # draw the board outline (with double-thickness):
     drawRect(app.boardLeft, app.boardTop, app.boardWidth, app.boardHeight,
            fill=None, border=app.boarderColor,
            borderWidth=2*app.cellBorderWidth)
+#modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
 def boardScreen_DrawSectionBoxes(app):
     for sectionRow in range(0,app.rows,3):
@@ -89,6 +98,7 @@ def boardScreen_DrawSectionBoxes(app):
             drawRect(cellLeft, cellTop, cellWidth, cellHeight,
                     fill=None, border= app.sectionBoxesColor,
                     borderWidth=app.cellBorderWidth)
+#modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
 def boardScreen_drawCell(app, row, col):
     cellLeft, cellTop = getCellLeftTop(app, row, col)
@@ -98,6 +108,7 @@ def boardScreen_drawCell(app, row, col):
     drawRect(cellLeft, cellTop, cellWidth, cellHeight,
              fill=color, border= app.lineColor,
              borderWidth=app.cellBorderWidth)
+#modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
 def getCellColor(app, row, col):
     selectedRow, selectedCol = app.selectedCell
@@ -128,18 +139,18 @@ def isInBox(app, row,col):
     return startRow<=row<startRow+3 and startCol<=col<startCol+3
         
 
-
-
 def getCellLeftTop(app, row, col):
     cellWidth, cellHeight = getCellSize(app)
     cellLeft = app.boardLeft + col * cellWidth
     cellTop = app.boardTop + row * cellHeight
     return (cellLeft, cellTop)
+#modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
 def getCellSize(app):
     cellWidth = app.boardWidth / app.cols
     cellHeight = app.boardHeight / app.rows
     return (cellWidth, cellHeight)
+#modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
 #cell selection
 def getCell(app, x, y):
@@ -152,3 +163,7 @@ def getCell(app, x, y):
         return (row, col)
     else:
         return None
+
+#modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
+
+

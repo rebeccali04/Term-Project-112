@@ -1,1 +1,3 @@
 https://www.schemecolor.com/brown-and-blue-pastels.php
+#os.getcwd() from https://stackoverflow.com/questions/5137497/find-the-current-directory-and-files-directory
+#modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
