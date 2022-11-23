@@ -17,7 +17,7 @@ from readingInputs import *
 
 def boardScreen_onScreenStart(app):
     app.currBoard = Board(getBoardIn2dList('easy-01.png.txt'))
-    print(app.currBoard.solvedBoard)
+    # print(app.currBoard.solvedBoard)
     app.currDisplayBoard = app.currBoard.userBoard
     app.rows = 9
     app.cols = 9
@@ -45,6 +45,7 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
           pass
       else:
           app.selectedCell = selectedCell
+          print(selectedCell)
 
 
 def boardScreen_onStep(app):

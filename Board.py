@@ -102,7 +102,7 @@ class Board:
         return result
     
     @staticmethod
-    def getEmptyBoard():
+    def getEmptyBoard(): #testing purposes
         return [[0]*9 for _ in range(9)]
 
 
@@ -113,4 +113,4 @@ def testBoardSolver():
     board = Board(getBoardIn2dList('easy-01.png.txt'))
     assert board.solvedBoard == getBoardIn2dList('easy-01-solution.png-solution.txt')
      
-testBoardSolver()
+# testBoardSolver()

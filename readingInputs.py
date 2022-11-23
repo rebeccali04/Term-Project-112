@@ -34,5 +34,23 @@ def getBoardIn2dList(fileName):
         resultBoard.append(lineList)
     return resultBoard #return 2d Board with ints
 
+    def loadBoardPaths(filters):
+        boardPaths = [ ]
+        for filename in os.listdir(f'boards/'):
+            if filename.endswith('.txt'):
+                if hasFilters(filename, filters):
+                    boardPaths.append(f'boards/{filename}')
+        return boardPaths
+
+    def hasFilters(filename, filters=None):
+        if filters == None: return True
+        for filter in filters:
+            if filter not in filename:
+                return False
+        return True
+
+    def loadRandomBoard(filters=None):
+        pass
+
 
 #os.getcwd() from https://stackoverflow.com/questions/5137497/find-the-current-directory-and-files-directory
