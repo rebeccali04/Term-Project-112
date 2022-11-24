@@ -1,12 +1,47 @@
 import copy
-from readingInputs import*
+from readingInputs import *
 
 class State:
     def __init__(self, board):
         self.rows = 9
         self.cols = 9
         self.orginalBoard = copy.deepcopy(board) #stores og board
-        self.userBoard = board
+        self.userBoard = self.getEmptyBoard()
+        self.legals = self.getInitalLegals()
+        self.setInitalBoard(board)
+        
+
+    def setInitalBoard(self,board):
+        for row in range(self.rows):
+            for col in range(self.cols):
+                val =board[row][col]
+                if val!= 0:
+                    self.set(row,col,val)
+        
+
+    def getEmptyBoard(self): #testing purposes
+        return [[0]*9 for _ in range(9)]
+    def getInitalLegals(self):
+        res = []
+        for _ in range(self.rows):
+            rowList =[]
+            for __ in range(self.cols):
+               rowList.append(self.getNineLegalVals())
+            res.append(rowList)
+        return res 
+
+    def getNineLegalVals(self):
+        return set([_ for _ in range(1,10)])
+
+    def boardAllFilled(self):
+            for rowList in self.userBoard:
+                if 0 in rowList:
+                    return False
+            return True
+    #eq
+    #repr
+    #hash
+    
     def getRowRegion(self, row):
         #gets a list of 9 tuple of the row
         result = []
@@ -56,6 +91,7 @@ class State:
         return res
 
     def getAllRegions(self):
+        #returns all regions on the board
         res = []
         for row in range(self.rows):
             res.append(self.getRowRegion(row))
@@ -75,14 +111,82 @@ class State:
                         resSet.add(self.getRowRegion(row))
                         resSet.add(self.getColRegion(col))
                         resSet.add(self.getBlockRegionByCell(row, col))
-        return list(resSet) 
-    '''
-    state.set(self, row, col, value)
-  * state.ban(self, row, col, values)
-  * state.unban(self, row, col, values)
-    '''
+        return list(resSet)
+
+    def set(self, row, col, value):
+        # place a value down on the board 
+        self.userBoard[row][col] = value
+        # ban all vals of this cell
+        self.ban(row, col, self.getNineLegalVals())
+        #all this val in all regions containing this val:
+        allRegions =self.getCellRegions( row, col)
+        for region in allRegions:
+            for location in region:
+                row, col = location
+                self.ban(row,col,{value})
+        
+
+    def ban(self, row, col, values):
+        #gets rid of the legal values in this row col cell
+        legalSet = self.legals[row][col]
+        assert(type(legalSet) == set)
+        self.legals[row][col] = legalSet.difference(values) #initally, legalSet= was not working
+
+    def unban(self, row, col, values):
+        legalSet = self.legals[row][col]
+        self.legals[row][col] = legalSet.union(values)
+    
+    def undoSet(self, row, col, currLegals):
+        cellVal = self.userBoard[row][col]
+        self.userBoard[row][col] =0
+        self.unban(row, col, currLegals)
+        for region in self.getCellRegions(row, col):
+            for location in region:
+                if self.canAdd(*location, cellVal):
+                    self.unban(*location, {cellVal})
+
+    def canAdd(self,row,col, num):
+        allCellRegions = self.getCellRegions(row,col)
+        for region in allCellRegions:
+            if num in region:
+                return False
+        return True
+    
+
+
+#########################################
+#          Test and debug               #
+#########################################
+
+    # def printBoard(self): print2dList(self.board)
+    def printLegals(self):
+        colWidth = 4
+        for col in range(9):
+            colWidth = max(colWidth, 1+max([len(self.legals[row][col]) for row in range(9)]))
+        for row in range(9):
+            for col in range(9):
+                label = ''.join([str(v) for v in sorted(self.legals[row][col])])
+                if label == '': label = '-'
+                print(f"{' '*(colWidth - len(label))}{label}", end='')
+            print()
+    def print(self): self.printBoard(); self.printLegals()
+#https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
+
 def testingState():
     testBlock = State(getBoardIn2dList('easy-01.png.txt'))
-    print(testBlock.getCellRegions(4,5))
-
-testingState()
+    # testBlock.legals = [[{1, 2, 3, 4, 5, 6, 7, 8, 9}, {1, 2, 3, 4, 5, 6, 7, 8, 9}],[]]
+    # testBlock.set(0,1,8)
+    # testBlock.ban(0,0,{1,2,3})
+    # print(testBlock.legals)
+    # testBlock.unban(0,0,{1,2,6})
+    print('testing state class----------------------------\n')
+    prevLegals = testBlock.legals
+    currLegals = testBlock.legals[0][1]
+    testBlock.set(0,1,8)
+    testBlock.printLegals()
+    testBlock.undoSet(0,1, currLegals)
+    print('-------------------')
+    testBlock.printLegals()
+    assert(testBlock.legals ==prevLegals)
+    print('passed')
+# testingState()

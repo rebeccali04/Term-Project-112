@@ -11,11 +11,20 @@ def getAllFile(cwdPath):
         if filename.endswith('.txt'):
             pathToFile = f'{cwdPath}/boards/{filename}'
             fileContents = readFile(pathToFile) #string type
-            print(fileContents)
-            print('--------------')
             res.append(fileContents)
     return res
+
 #copied from piazza and modified
+
+# def getAllFile(cwdPath):
+#     res = []
+#     for filename in os.listdir(cwdPath+'/boards'):
+#         if filename.endswith('.txt'):
+#             pathToFile = f'{cwdPath}/boards/{filename}'
+#             fileContents = readFile(pathToFile) #string type
+#             res.append(fileContents)
+#     return res
+#m original
 
 def getThisFile(fileName):
     cwdPath = os.getcwd()
@@ -34,23 +43,24 @@ def getBoardIn2dList(fileName):
         resultBoard.append(lineList)
     return resultBoard #return 2d Board with ints
 
-    def loadBoardPaths(filters):
-        boardPaths = [ ]
-        for filename in os.listdir(f'boards/'):
-            if filename.endswith('.txt'):
-                if hasFilters(filename, filters):
-                    boardPaths.append(f'boards/{filename}')
-        return boardPaths
-
-    def hasFilters(filename, filters=None):
-        if filters == None: return True
-        for filter in filters:
-            if filter not in filename:
-                return False
-        return True
-
-    def loadRandomBoard(filters=None):
-        pass
+def loadBoardPaths(filters):
+    boardPaths = [ ]
+    for filename in os.listdir(f'boards/'):
+        if filename.endswith('.txt'):
+            if hasFilters(filename, filters):
+                boardPaths.append(f'boards/{filename}')
+    return boardPaths
+#https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
+def hasFilters(filename, filters=None):
+    if filters == None: return True
+    for filter in filters:
+        if filter not in filename:
+            return False
+    return True
+#https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
+def loadRandomBoard(filters=None):
+    pass
+#https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
 
 
 #os.getcwd() from https://stackoverflow.com/questions/5137497/find-the-current-directory-and-files-directory

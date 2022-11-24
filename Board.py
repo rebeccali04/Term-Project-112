@@ -3,13 +3,10 @@ from readingInputs import*
 class Board:
     #pass in a 2d list of the board
     def __init__(self, board):
-        self.rows = 9
-        self.cols = 9
-        self.orginalBoard = copy.deepcopy(board) #stores og board
-        self.userBoard = board
         self.solveBoard()
         
     def solveBoard(self):
+        return
         board = copy.deepcopy(self.orginalBoard)
         self.solvedBoard = Board.solveBoardHelper(board)
 
@@ -61,49 +58,51 @@ class Board:
                 seenVals.append(val)
         return False
 
-    @staticmethod
-    def breakToFlattenedBox(board, startRow, startCol, boxSize=3):
-        #given a starting row col location, returns a 1d list of the box 
-        # region of the square with side length of the boxsize
-        #non mutating
-        box= []
-        for row in range(startRow, startRow+boxSize):
-            rowList = []
-            for col in range(startCol, startCol+boxSize):
-                valAtIndex = board[row][col]
-                rowList.append(valAtIndex)
-            box.append(rowList)
-        flattenedBox =[]
-        for rowList in box:
-            flattenedBox.extend(rowList)
-        return flattenedBox
+        
 
-    @staticmethod
-    def getRowColSection(board):
-        rows, cols = len(board),len(board[0])
-        #returns a list of sectiions(which are lists)
-        result = []
-        #get rowList
-        for rowList in board:
-            result.append(copy.copy(rowList))
-        #get colList
-        for col in range(cols):
-            colList =[]
-            for row in range(rows):
-                colList.append(board[row][col])
-            result.append(copy.copy(colList))
-        #get boxes
-        boxSize = int(len(board)**0.5)
-        for startRow in range(0,rows,boxSize):
-            for startCol in range(0, cols, boxSize):
-                result.append(Board.breakToFlattenedBox(copy.deepcopy(board), 
-                                startRow, startCol, boxSize))
+    # @staticmethod
+    # def breakToFlattenedBox(board, startRow, startCol, boxSize=3):
+    #     #given a starting row col location, returns a 1d list of the box 
+    #     # region of the square with side length of the boxsize
+    #     #non mutating
+    #     box= []
+    #     for row in range(startRow, startRow+boxSize):
+    #         rowList = []
+    #         for col in range(startCol, startCol+boxSize):
+    #             valAtIndex = board[row][col]
+    #             rowList.append(valAtIndex)
+    #         box.append(rowList)
+    #     flattenedBox =[]
+    #     for rowList in box:
+    #         flattenedBox.extend(rowList)
+    #     return flattenedBox
+
+    # @staticmethod
+    # def getRowColSection(board):
+    #     rows, cols = len(board),len(board[0])
+    #     #returns a list of sectiions(which are lists)
+    #     result = []
+    #     #get rowList
+    #     for rowList in board:
+    #         result.append(copy.copy(rowList))
+    #     #get colList
+    #     for col in range(cols):
+    #         colList =[]
+    #         for row in range(rows):
+    #             colList.append(board[row][col])
+    #         result.append(copy.copy(colList))
+    #     #get boxes
+    #     boxSize = int(len(board)**0.5)
+    #     for startRow in range(0,rows,boxSize):
+    #         for startCol in range(0, cols, boxSize):
+    #             result.append(Board.breakToFlattenedBox(copy.deepcopy(board), 
+    #                             startRow, startCol, boxSize))
                 
-        return result
+    #     return result
     
-    @staticmethod
-    def getEmptyBoard(): #testing purposes
-        return [[0]*9 for _ in range(9)]
+    # @staticmethod
+    # def getEmptyBoard(): #testing purposes
+    #     return [[0]*9 for _ in range(9)]
 
 
 

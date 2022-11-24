@@ -2,7 +2,7 @@ try: from cmu_cs3_graphics import *
 except: from cmu_graphics import *
 
 from runAppWithScreens import *
-from Board import Board
+from State import *
 import math
 from readingInputs import *
 ##################################
@@ -12,15 +12,12 @@ from readingInputs import *
 #Todo
 # cell objects?
 # inputing numbers function
-
+#refactor all board to use state class instead
 
 
 def boardScreen_onScreenStart(app):
-    app.currBoard = Board(getBoardIn2dList('easy-01.png.txt'))
-    # print(app.currBoard.solvedBoard)
-    app.currDisplayBoard = app.currBoard.userBoard
-    app.rows = 9
-    app.cols = 9
+    app.state = State(getBoardIn2dList('easy-01.png.txt'))
+    
     app.boardLeft = app.width*0.1
     app.boardTop = app.height*0.1
     app.boardWidth = app.width*0.8
@@ -33,10 +30,9 @@ def boardScreen_onScreenStart(app):
 
 def boardScreen_onKeyPress(app, key):
     if key == 's': setActiveScreen('screen1')
-    if key == 'z': 
-        app.currDisplayBoard = app.currBoard.solvedBoard
-    if key == 'x': 
-        app.currDisplayBoard = app.currBoard.userBoard
+   
+    
+
 def boardScreen_onMousePress(app,mouseX, mouseY):
     selectedCell = getCell(app, mouseX, mouseY)
     if selectedCell != None:
@@ -56,7 +52,7 @@ def boardScreen_redrawAll(app):
     boardScreen_drawBoard(app)
     boardScreen_drawBoardBorder(app)
     boardScreen_DrawSectionBoxes(app)
-    drawSudokuNumbers(app, app.currDisplayBoard)
+    drawSudokuNumbers(app, app.state.userBoard)
 
 
     ########################################################
@@ -65,8 +61,8 @@ def boardScreen_redrawAll(app):
 
 def drawSudokuNumbers(app, boardToDraw):
     cellWidth, cellHeight = getCellSize(app)
-    for row in range(app.rows):
-        for col in range(app.cols):
+    for row in range(app.state.rows):
+        for col in range(app.state.cols):
             cellLeft, cellTop = getCellLeftTop(app, row, col)
             cellX = cellLeft+cellWidth/2
             cellY = cellTop +cellHeight/2
@@ -77,8 +73,8 @@ def drawSudokuNumbers(app, boardToDraw):
                 
 
 def boardScreen_drawBoard(app):
-    for row in range(app.rows):
-        for col in range(app.cols):
+    for row in range(app.state.rows):
+        for col in range(app.state.cols):
             boardScreen_drawCell(app, row, col)
 #modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
@@ -90,8 +86,8 @@ def boardScreen_drawBoardBorder(app):
 #modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
 def boardScreen_DrawSectionBoxes(app):
-    for sectionRow in range(0,app.rows,3):
-        for sectionCol in range(0,app.cols,3):
+    for sectionRow in range(0,app.state.rows,3):
+        for sectionCol in range(0,app.state.cols,3):
             cellLeft, cellTop = getCellLeftTop(app, sectionRow, sectionCol)
             cellWidth, cellHeight = getCellSize(app)
             cellWidth*=3
@@ -148,8 +144,8 @@ def getCellLeftTop(app, row, col):
 #modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
 def getCellSize(app):
-    cellWidth = app.boardWidth / app.cols
-    cellHeight = app.boardHeight / app.rows
+    cellWidth = app.boardWidth / app.state.cols
+    cellHeight = app.boardHeight / app.state.rows
     return (cellWidth, cellHeight)
 #modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
@@ -160,7 +156,7 @@ def getCell(app, x, y):
     cellWidth, cellHeight = getCellSize(app)
     row = math.floor(dy / cellHeight)
     col = math.floor(dx / cellWidth)
-    if (0 <= row < app.rows) and (0 <= col < app.cols):
+    if (0 <= row < app.state.rows) and (0 <= col < app.state.cols):
         return (row, col)
     else:
         return None
