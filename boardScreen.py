@@ -29,7 +29,7 @@ def boardScreen_onScreenStart(app, board = None):
     app.selectedCell = (0,0)
 
 def boardScreen_onKeyPress(app, key):
-    if key == 'space': setActiveScreen('screen1')
+    if key == 'space': setActiveScreen('mainScreen')
     if key.isdigit():
         row,col = app.selectedCell
         if not app.state.cellInOriginalBoard(row,col):
