@@ -2,7 +2,7 @@ try: from cmu_cs3_graphics import *
 except: from cmu_graphics import *
 
 from runAppWithScreens import *
-from screen1 import *
+from mainScreen import *
 from boardScreen import *
 
 ##################################

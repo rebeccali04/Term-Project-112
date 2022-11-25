@@ -15,7 +15,7 @@ from readingInputs import *
 #refactor all board to use state class instead
 
 
-def boardScreen_onScreenStart(app):
+def boardScreen_onScreenStart(app, board = None):
     app.state = State(getBoardIn2dList('easy-01.png.txt'))
     
     app.boardLeft = app.width*0.1
@@ -29,11 +29,15 @@ def boardScreen_onScreenStart(app):
     app.selectedCell = (0,0)
 
 def boardScreen_onKeyPress(app, key):
-    if key == 's': setActiveScreen('screen1')
-   
+    if key == 'space': setActiveScreen('screen1')
+    if key.isdigit():
+        row,col = app.selectedCell
+        if not app.state.cellInOriginalBoard(row,col):
+            app.state.set(row, col, int(key))
     
 
 def boardScreen_onMousePress(app,mouseX, mouseY):
+    print(mouseX,mouseY)
     selectedCell = getCell(app, mouseX, mouseY)
     if selectedCell != None:
       if selectedCell == app.selectedCell:
@@ -63,12 +67,13 @@ def drawSudokuNumbers(app, boardToDraw):
     cellWidth, cellHeight = getCellSize(app)
     for row in range(app.state.rows):
         for col in range(app.state.cols):
+            color = rgb(175, 125, 119) if not app.state.cellInOriginalBoard(row,col) else 'black'
             cellLeft, cellTop = getCellLeftTop(app, row, col)
             cellX = cellLeft+cellWidth/2
             cellY = cellTop +cellHeight/2
             num =boardToDraw[row][col]
             if num!=0:
-                drawLabel(str(num),cellX, cellY, size = app.width//20, bold = True)
+                drawLabel(str(num),cellX, cellY, size = app.width//20, bold = True, fill =color)
                 
                 
 
@@ -110,6 +115,7 @@ def boardScreen_drawCell(app, row, col):
 def getCellColor(app, row, col):
     selectedRow, selectedCol = app.selectedCell
     color = None
+    
     if (row, col) == app.selectedCell:
         color = rgb(183, 202, 241)
     elif row == selectedRow or col == selectedCol:

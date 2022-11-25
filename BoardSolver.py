@@ -169,7 +169,7 @@ def testBoardSolver():
     
 def boardSolverTesterWithTime():
     time0 = time.time()
-    boardName = 'evil-01'
+    boardName = 'evil-02' #taking 9 secs for evil 2
     print(f'testing solver for {boardName}')
     testBlock = State(getBoardIn2dList(boardName+'.png.txt'))
     boardSolverMain(testBlock)

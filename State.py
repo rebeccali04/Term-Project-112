@@ -5,7 +5,7 @@ class State:
     def __init__(self, board):
         self.rows = 9
         self.cols = 9
-        self.orginalBoard = copy.deepcopy(board) #stores og board
+        self.originalBoard = copy.deepcopy(board) #stores og board
         self.userBoard = self.getEmptyBoard()
         self.legals = self.getInitalLegals()
         self.setInitalBoard(board)
@@ -41,6 +41,9 @@ class State:
     #eq
     #repr
     #hash
+    
+    def cellInOriginalBoard(self,row,col):
+        return self.originalBoard[row][col] != 0
     
     def getRowRegion(self, row):
         #gets a list of 9 tuple of the row
