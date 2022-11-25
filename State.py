@@ -21,6 +21,7 @@ class State:
 
     def getEmptyBoard(self): #testing purposes
         return [[0]*9 for _ in range(9)]
+        
     def getInitalLegals(self):
         res = []
         for _ in range(self.rows):

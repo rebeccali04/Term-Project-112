@@ -5,28 +5,30 @@ from runAppWithScreens import *
 from State import *
 import math
 from readingInputs import *
+from Buttons import *
 ##################################
 # boardScreen
 ##################################
 
 #Todo
-# cell objects?
 # inputing numbers function
-#refactor all board to use state class instead
-
 
 def boardScreen_onScreenStart(app, board = None):
-    app.state = State(getBoardIn2dList('easy-01.png.txt'))
-    
     app.boardLeft = app.width*0.1
-    app.boardTop = app.height*0.1
+    app.boardTop = app.height*0.15
     app.boardWidth = app.width*0.8
     app.boardHeight = app.height*0.8
     app.cellBorderWidth = 2
     app.lineColor = 'gray'
     app.boarderColor ='black'
     app.sectionBoxesColor = 'black'
+    restartBoardScreen(app)
+
+def restartBoardScreen(app):
+    app.boardScreenButtons = []
+    app.state = State(getBoardIn2dList('easy-01.png.txt'))
     app.selectedCell = (0,0)
+    setAllButtons(app)
 
 def boardScreen_onKeyPress(app, key):
     if key == 'space': setActiveScreen('mainScreen')
@@ -34,19 +36,29 @@ def boardScreen_onKeyPress(app, key):
         row,col = app.selectedCell
         if not app.state.cellInOriginalBoard(row,col):
             app.state.set(row, col, int(key))
-    
+
 
 def boardScreen_onMousePress(app,mouseX, mouseY):
-    print(mouseX,mouseY)
     selectedCell = getCell(app, mouseX, mouseY)
     if selectedCell != None:
-      if selectedCell == app.selectedCell:
-          #app.selection = None
-          pass
-      else:
-          app.selectedCell = selectedCell
-          print(selectedCell)
+      if selectedCell != app.selectedCell:
+        app.selectedCell = selectedCell
+    buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
+    if buttonClickedIndex ==0:
+        setActiveScreen('mainScreen')
+    elif buttonClickedIndex ==1:
+        print('Hint')
+    elif buttonClickedIndex ==2:
+        print('New Game')
+    elif buttonClickedIndex ==3:
+        print('legals toggle')
 
+def boardScreen_onMouseMove(app, mouseX, mouseY):
+    buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
+    if buttonClickedIndex != None:
+        app.boardScreenButtons[buttonClickedIndex]['hover'] =True
+    else:
+        setAllButtonHoverFalse(app.boardScreenButtons)
 
 def boardScreen_onStep(app):
     pass
@@ -57,6 +69,17 @@ def boardScreen_redrawAll(app):
     boardScreen_drawBoardBorder(app)
     boardScreen_DrawSectionBoxes(app)
     drawSudokuNumbers(app, app.state.userBoard)
+    drawAllButtons(app.boardScreenButtons)
+
+    ########################################################
+    #                      Buttons                         #
+    ########################################################
+
+def setAllButtons(app):
+    setButton(app.boardScreenButtons, 'Back',50 , 20, length =60, height =40)
+    setButton(app.boardScreenButtons, 'Hint',150 , 20,length =60, height =40)
+    setButton(app.boardScreenButtons, 'New Game',250 , 20,length =100, height =40)
+    setButton(app.boardScreenButtons, 'Legals',400 , 20,length =100, height =40)
 
 
     ########################################################
