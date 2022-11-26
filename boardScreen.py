@@ -29,6 +29,13 @@ def restartBoardScreen(app):
     app.state = State(getBoardIn2dList('easy-01.png.txt'))
     app.selectedCell = (0,0)
     setAllButtons(app)
+    #move to mode
+    app.currMode = 'hard'
+    if app.currMode =='easy':
+        app.usingAutoLegals = False
+    else: 
+        app.usingAutoLegals =True
+    # print(app.usingAutoLegals)
 
 def boardScreen_onKeyPress(app, key):
     if key == 'space': setActiveScreen('mainScreen')
@@ -49,9 +56,12 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
     elif buttonClickedIndex ==1:
         print('Hint')
     elif buttonClickedIndex ==2:
+        restartBoardScreen(app)
         print('New Game')
     elif buttonClickedIndex ==3:
+        app.usingAutoLegals = not app.usingAutoLegals 
         print('legals toggle')
+        #still need to allow manual changing legal capabilities
 
 def boardScreen_onMouseMove(app, mouseX, mouseY):
     buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
@@ -69,17 +79,19 @@ def boardScreen_redrawAll(app):
     boardScreen_drawBoardBorder(app)
     boardScreen_DrawSectionBoxes(app)
     drawSudokuNumbers(app, app.state.userBoard)
+    drawAllLegals(app)
     drawAllButtons(app.boardScreenButtons)
-
+    
     ########################################################
     #                      Buttons                         #
     ########################################################
 
 def setAllButtons(app):
-    setButton(app.boardScreenButtons, 'Back',50 , 20, length =60, height =40)
-    setButton(app.boardScreenButtons, 'Hint',150 , 20,length =60, height =40)
-    setButton(app.boardScreenButtons, 'New Game',250 , 20,length =100, height =40)
-    setButton(app.boardScreenButtons, 'Legals',400 , 20,length =100, height =40)
+    y = 40
+    setButton(app.boardScreenButtons, 'Back',50 , y, length =60, height =40)
+    setButton(app.boardScreenButtons, 'Hint',150 , y,length =60, height =40)
+    setButton(app.boardScreenButtons, 'New Game',250 , y,length =100, height =40)
+    setButton(app.boardScreenButtons, 'Legals',400 , y,length =100, height =40)
 
 
     ########################################################
@@ -98,8 +110,44 @@ def drawSudokuNumbers(app, boardToDraw):
             if num!=0:
                 drawLabel(str(num),cellX, cellY, size = app.width//20, bold = True, fill =color)
                 
-                
+def drawAllLegals(app):
+    if app.usingAutoLegals:
+        legals = app.state.legals
+        app.state.printLegals()
+    else:
+        legals = app.state.userLegals
+    for row in range(app.state.rows):
+        for col in range(app.state.cols):
+            if app.state.userBoard[row][col]==0:
+                legalsSet = legals[row][col]
+                drawLegalsInCell(app, row, col, legalsSet)
 
+def drawLegalsInCell(app, row, col, legalsSet):
+    cellLeft, cellTop =getCellLeftTop(app, row, col)
+    cellWidth, cellHeight =getCellSize(app)
+    for num in range(1,10): #from 1 to 9
+        if num in legalsSet:
+            legalRow = (num-1)//3
+            legalCol = (num-1)%3
+            legalHeight =cellHeight/3
+            legalWidth = cellWidth/3
+            legalLeft = cellLeft + legalCol * legalHeight
+            legalTop = cellTop + legalRow * legalWidth
+            legalX = legalLeft + legalHeight/2
+            legalY = legalTop + legalWidth/2 #from logic of drawSudokuNumbers and getCellleftTop
+            
+            drawLabel(str(num), legalX,legalY)
+'''
+def getCellLeftTop(app, row, col):
+    cellWidth, cellHeight = getCellSize(app)
+    cellLeft = app.boardLeft + col * cellWidth
+    cellTop = app.boardTop + row * cellHeight
+    return (cellLeft, cellTop)
+
+    cellLeft, cellTop = getCellLeftTop(app, row, col)
+            cellX = cellLeft+cellWidth/2
+            cellY = cellTop +cellHeight/2
+'''
 def boardScreen_drawBoard(app):
     for row in range(app.state.rows):
         for col in range(app.state.cols):

@@ -8,14 +8,12 @@ from Buttons import *
 ##################################
 
 def mainScreen_onScreenStart(app):
-    # app.currScreen = 'mainScreen'
     app.mainScreenButtons = [] #(msg, top, left, length, height, hover)
-    app.currPlayMode = 'easy'
     setAllButtons(app)
 def mainScreen_onKeyPress(app, key):
     if key == 'space': 
         # app.currScreen = 'boardScreen'
-        setActiveScreen('boardScreen')
+        setActiveScreen('boardScreen', width=800, height =800)
         
 
 def mainScreen_redrawAll(app):
@@ -39,7 +37,8 @@ def mainScreen_onMousePress(app, mouseX, mouseY):
         # app.currScrren = 'boardScreen'
         setActiveScreen('boardScreen')
     elif buttonClickedIndex ==1:
-        print('Mode')
+        #Mode
+        setActiveScreen('modeScreen')
     elif buttonClickedIndex ==2:
         print('input board')
     elif buttonClickedIndex ==3:

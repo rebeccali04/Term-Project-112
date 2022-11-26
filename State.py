@@ -9,6 +9,7 @@ class State:
         self.userBoard = self.getEmptyBoard()
         self.legals = self.getInitalLegals()
         self.setInitalBoard(board)
+        self.userLegals =self.getInitalLegals()
         
 
     def setInitalBoard(self,board):
@@ -128,13 +129,21 @@ class State:
             for location in region:
                 row, col = location
                 self.ban(row,col,{value})
+
+    def banUserLegals(self, row, col, values):
+        #gets rid of the legal values in this row col cell
+        legalSet = self.userLegals[row][col]
+        self.legals[row][col] = legalSet.difference(values) 
         
+    def unbanUserLegals(self, row, col, values):
+        legalSet = self.userLegals[row][col]
+        self.legals[row][col] = legalSet.union(values)
+    
 
     def ban(self, row, col, values):
         #gets rid of the legal values in this row col cell
         legalSet = self.legals[row][col]
-        assert(type(legalSet) == set)
-        self.legals[row][col] = legalSet.difference(values) #initally, legalSet= was not working
+        self.legals[row][col] = legalSet.difference(values) 
 
     def unban(self, row, col, values):
         legalSet = self.legals[row][col]
@@ -161,7 +170,7 @@ class State:
 #########################################
 #          Test and debug               #
 #########################################
-
+    #fix, can't find print2dList
     # def printBoard(self): print2dList(self.board)
     def printLegals(self):
         colWidth = 4
