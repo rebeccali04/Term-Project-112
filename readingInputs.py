@@ -1,4 +1,5 @@
 import os
+import random
 def readFile(path):
     with open(path, "rt") as f:
         return f.read()
@@ -26,10 +27,13 @@ def getAllFile(cwdPath):
 #     return res
 #m original
 
-def getThisFile(fileName):
-    cwdPath = os.getcwd()
-    pathToFile = cwdPath+ '/boards/'+fileName
-    fileContents = readFile(pathToFile)
+# def getThisFile(fileName):
+#     cwdPath = os.getcwd()
+#     pathToFile = cwdPath+ '/boards/'+fileName
+#     fileContents = readFile(pathToFile)
+#     return fileContents #returns a string
+def getThisFile(filePath):
+    fileContents = readFile(filePath)
     return fileContents #returns a string
 
 #input example 'easy-01.png.txt'
@@ -50,6 +54,7 @@ def loadBoardPaths(filters):
             if hasFilters(filename, filters):
                 boardPaths.append(f'boards/{filename}')
     return boardPaths
+
 #https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
 def hasFilters(filename, filters=None):
     if filters == None: return True
@@ -58,9 +63,21 @@ def hasFilters(filename, filters=None):
             return False
     return True
 #https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
+
+def loadRandomBoardPath(filters):
+    allBoadPath =loadBoardPaths(filters)
+    return random.choice(allBoadPath)
+
+
 def loadRandomBoard(filters=None):
-    pass
+    boardPath = loadRandomBoardPath(filters)
+    return getBoardIn2dList(boardPath)
+    
 #https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
 
 
 #os.getcwd() from https://stackoverflow.com/questions/5137497/find-the-current-directory-and-files-directory
+def test():
+    print(loadRandomBoard('hard'))
+
+test()

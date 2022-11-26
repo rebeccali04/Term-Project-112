@@ -10,11 +10,12 @@ from Buttons import *
 def mainScreen_onScreenStart(app):
     app.mainScreenButtons = [] #(msg, top, left, length, height, hover)
     setAllButtons(app)
+    app.currMode = 'easy'
+
 def mainScreen_onKeyPress(app, key):
     if key == 'space': 
         # app.currScreen = 'boardScreen'
         setActiveScreen('boardScreen', width=800, height =800)
-        
 
 def mainScreen_redrawAll(app):
     drawTitle(app, "SUDOKU",)

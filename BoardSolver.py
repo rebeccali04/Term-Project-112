@@ -2,12 +2,13 @@ from State import *
 from readingInputs import *
 import time
 
-def boardSolverMain(stateObject):
+def boardSolverMain(stateObject,verbose):
     assert(isinstance(stateObject, State))
     state =copy.deepcopy(stateObject)
     potentialRes =solveBoard(state)
     assert(potentialRes !=None)
     stateObject.solvedBoard = potentialRes
+    return True
 
 #mutating version not working
 # def solveBoard(state):
@@ -128,6 +129,7 @@ def solveBoard(self):
 #########################################
 def testBoardSolver(state, verbose):
     return
+
 def testBacktracker(filters):
         time0 = time.time()
         boardPaths = sorted(loadBoardPaths(filters))
@@ -152,8 +154,7 @@ def testBacktracker(filters):
         print(f'Total time: {round(time1-time0, 1)} seconds')
         
 def testBoardSolver():
-    pass
-    # testBacktracker(filters=['hard'])
+    testBacktracker(filters=['hard'])
     # problems with 'easy-03' and beyond
     # boardName = 'hard-01'
     # print('testingBoardSolver')
@@ -179,4 +180,4 @@ def boardSolverTesterWithTime():
     print(f'Time is {time1-time0} seconds')
 
 
-boardSolverTesterWithTime()
+testBoardSolver()

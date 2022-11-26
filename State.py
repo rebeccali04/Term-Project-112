@@ -165,6 +165,22 @@ class State:
                 return False
         return True
     
+    def inputLegals(self, row, col, val):
+        legalSet = self.userLegals[row][col]
+        if val in legalSet:
+            legalSet.remove(val)
+        else:
+            legalSet.add(val)
+    #need to test
+
+    ########HINTS##############
+    def playHint1(self):
+        for row in range(self.rows):
+            for col in range(self.cols):
+                legalSet =self.legals[row][col]
+                if len(legalSet) ==1:
+                    self.set(row, col, legalSet.pop())
+                    return 
 
 
 #########################################

@@ -26,24 +26,39 @@ def boardScreen_onScreenStart(app, board = None):
 
 def restartBoardScreen(app):
     app.boardScreenButtons = []
-    app.state = State(getBoardIn2dList('easy-01.png.txt'))
+    #load board
+    board = loadRandomBoard(app.currMode)
+    app.state = State(board)
     app.selectedCell = (0,0)
+    app.inputingLegals =False
     setAllButtons(app)
     #move to mode
-    app.currMode = 'hard'
-    if app.currMode =='easy':
+    if app.currMode == 'easy':
         app.usingAutoLegals = False
     else: 
         app.usingAutoLegals =True
-    # print(app.usingAutoLegals)
+    
 
 def boardScreen_onKeyPress(app, key):
     if key == 'space': setActiveScreen('mainScreen')
     if key.isdigit():
         row,col = app.selectedCell
+        val =int(key)
         if not app.state.cellInOriginalBoard(row,col):
-            app.state.set(row, col, int(key))
+            if app.inputingLegals and not app.usingAutoLegals:
+                print('this is working')
+                app.state.inputLegals(row, col, val)
+            else:
+                app.state.set(row, col,val )
+    if key =='s':
+        #play singleton
+        app.state.playHint1()
+    if key =='l':
+        app.inputingLegals =True
 
+def boardScreen_onKeyRelease(app, key):
+    if key =='l':
+        app.inputingLegals =False
 
 def boardScreen_onMousePress(app,mouseX, mouseY):
     selectedCell = getCell(app, mouseX, mouseY)
@@ -55,6 +70,7 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
         setActiveScreen('mainScreen')
     elif buttonClickedIndex ==1:
         print('Hint')
+        app.state.playHint1()
     elif buttonClickedIndex ==2:
         restartBoardScreen(app)
         print('New Game')
@@ -62,6 +78,8 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
         app.usingAutoLegals = not app.usingAutoLegals 
         print('legals toggle')
         #still need to allow manual changing legal capabilities
+
+
 
 def boardScreen_onMouseMove(app, mouseX, mouseY):
     buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
@@ -113,7 +131,6 @@ def drawSudokuNumbers(app, boardToDraw):
 def drawAllLegals(app):
     if app.usingAutoLegals:
         legals = app.state.legals
-        app.state.printLegals()
     else:
         legals = app.state.userLegals
     for row in range(app.state.rows):
