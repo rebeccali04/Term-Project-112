@@ -13,11 +13,12 @@ from Buttons import *
 #Todo
 # inputing numbers function
 
-def boardScreen_onScreenStart(app, board = None):
-    app.boardLeft = app.width*0.1
-    app.boardTop = app.height*0.15
-    app.boardWidth = app.width*0.8
-    app.boardHeight = app.height*0.8
+def boardScreen_onScreenStart(app):
+    app.boardLeft = 100 #app.width*0.1
+    app.boardTop = 100 #app.height*0.15
+    boardSideLen = min(app.width*0.8,app.height*0.8)
+    app.boardWidth = boardSideLen
+    app.boardHeight = boardSideLen
     app.cellBorderWidth = 2
     app.lineColor = 'gray'
     app.boarderColor ='black'
@@ -45,9 +46,9 @@ def boardScreen_onKeyPress(app, key):
         row,col = app.selectedCell
         val =int(key)
         if not app.state.cellInOriginalBoard(row,col):
-            if app.inputingLegals and not app.usingAutoLegals:
-                print('this is working')
-                app.state.inputLegals(row, col, val)
+            if app.inputingLegals: 
+                if not app.usingAutoLegals:
+                    app.state.inputLegals(row, col, val)
             else:
                 app.state.set(row, col,val )
     if key =='s':
@@ -55,6 +56,25 @@ def boardScreen_onKeyPress(app, key):
         app.state.playHint1()
     if key =='l':
         app.inputingLegals =True
+    if key =='a': 
+        app.usingAutoLegals =not app.usingAutoLegals
+    
+    #up down left right
+    
+    if key == 'left':    moveSelection(app, 0, -1)
+    elif key == 'right': moveSelection(app, 0, +1)
+    elif key == 'up':    moveSelection(app ,-1, 0)
+    elif key == 'down':  moveSelection(app, +1, 0) 
+    #modified, from https://cs3-112-f22.academy.cs.cmu.edu/notes/4189
+
+def moveSelection(app, drow, dcol):
+    if app.selectedCell != None:
+        selectedRow, selectedCol = app.selectedCell
+        newSelectedRow = (selectedRow + drow) % app.state.rows
+        newSelectedCol = (selectedCol + dcol) % app.state.cols
+        app.selectedCell = (newSelectedRow, newSelectedCol)
+#modified, from https://cs3-112-f22.academy.cs.cmu.edu/notes/4189
+
 
 def boardScreen_onKeyRelease(app, key):
     if key =='l':
@@ -77,7 +97,6 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
     elif buttonClickedIndex ==3:
         app.usingAutoLegals = not app.usingAutoLegals 
         print('legals toggle')
-        #still need to allow manual changing legal capabilities
 
 
 
@@ -87,10 +106,6 @@ def boardScreen_onMouseMove(app, mouseX, mouseY):
         app.boardScreenButtons[buttonClickedIndex]['hover'] =True
     else:
         setAllButtonHoverFalse(app.boardScreenButtons)
-
-def boardScreen_onStep(app):
-    pass
-    # app.cx = (app.cx + app.dx) % app.width
 
 def boardScreen_redrawAll(app):
     boardScreen_drawBoard(app)
@@ -107,9 +122,9 @@ def boardScreen_redrawAll(app):
 def setAllButtons(app):
     y = 40
     setButton(app.boardScreenButtons, 'Back',50 , y, length =60, height =40)
-    setButton(app.boardScreenButtons, 'Hint',150 , y,length =60, height =40)
+    setButton(app.boardScreenButtons, 'Singleton',125 , y,length =100, height =40)
     setButton(app.boardScreenButtons, 'New Game',250 , y,length =100, height =40)
-    setButton(app.boardScreenButtons, 'Legals',400 , y,length =100, height =40)
+    setButton(app.boardScreenButtons, 'Legals',375 , y,length =100, height =40)
 
 
     ########################################################

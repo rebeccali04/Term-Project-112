@@ -78,6 +78,7 @@ def loadRandomBoard(filters=None):
 
 #os.getcwd() from https://stackoverflow.com/questions/5137497/find-the-current-directory-and-files-directory
 def test():
-    print(loadRandomBoard('hard'))
+    # print(loadRandomBoard('hard'))
+    pass
 
 test()

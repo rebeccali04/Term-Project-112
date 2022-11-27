@@ -15,7 +15,7 @@ def mainScreen_onScreenStart(app):
 def mainScreen_onKeyPress(app, key):
     if key == 'space': 
         # app.currScreen = 'boardScreen'
-        setActiveScreen('boardScreen', width=800, height =800)
+        setActiveScreen('boardScreen')
 
 def mainScreen_redrawAll(app):
     drawTitle(app, "SUDOKU",)
@@ -53,3 +53,14 @@ def setAllButtons(app):
     setButton(app.mainScreenButtons, 'Mode', centerX, startY+80*1,)
     setButton(app.mainScreenButtons, 'Input Board', centerX, startY+80*2,)
     setButton(app.mainScreenButtons, 'How to Play', centerX, startY+80*3,)
+
+#for modeScreen
+# def setAllButtons(app):
+#     centerX = app.width/2 - 150/2
+#     startY = 225
+#     setButton(app.mainScreenButtons, 'EASY',centerX , startY,)
+#     setButton(app.mainScreenButtons, 'MEDIUM', centerX, startY+80*1,)
+#     setButton(app.mainScreenButtons, 'HARD', centerX, startY+80*2,)
+#     setButton(app.mainScreenButtons, 'EXPERT', centerX, startY+80*3,)
+#     setButton(app.mainScreenButtons, 'EVIL', centerX, startY+80*4,)
+#     setButton(app.mainScreenButtons, 'Back',50 , 40, length =60, height =40)
