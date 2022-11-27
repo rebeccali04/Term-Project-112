@@ -4,14 +4,17 @@ except: from cmu_graphics import *
 from runAppWithScreens import *
 from Buttons import *
 from State import *
+import math
+import copy
 
 def inputBoardScreen_onScreenStart(app):
     restartInputBoardScreen(app)
 
 def restartInputBoardScreen(app):
     app.inputState = State(getEmptyBoard())
-    app.inputBoardScreenButtons
+    app.inputBoardScreenButtons=[]
     app.inputSelectedCell = (0,0)
+    setAllButtons(app)
 
 def inputBoardScreen_onKeyPress(app, key):
     if key == 'space': 
@@ -29,11 +32,11 @@ def inputBoardScreen_onKeyPress(app, key):
     #modified, from https://cs3-112-f22.academy.cs.cmu.edu/notes/4189
 
 def moveSelection(app, drow, dcol):
-    if app.inputselectedCell != None:
-        selectedRow, selectedCol = app.inputselectedCell
+    if app.inputSelectedCell != None:
+        selectedRow, selectedCol = app.inputSelectedCell
         newSelectedRow = (selectedRow + drow) % app.inputState.rows
         newSelectedCol = (selectedCol + dcol) % app.inputState.cols
-        app.inputselectedCell = (newSelectedRow, newSelectedCol)
+        app.inputSelectedCell = (newSelectedRow, newSelectedCol)
 #modified, from https://cs3-112-f22.academy.cs.cmu.edu/notes/4189
 
 
@@ -53,11 +56,12 @@ def inputBoardScreen_onMousePress(app,mouseX, mouseY):
     elif buttonClickedIndex ==2:
         #done
         print('done button')
-        app.state = app.inputBoardState #test
+        app.inputState.originalBoard = copy.deepcopy(app.inputState.userBoard)
+        app.state = copy.deepcopy(app.inputState) #test
     elif buttonClickedIndex ==3:
         #play
         print('play button')
-        setActiveScreen('mainScreen')
+        setActiveScreen('boardScreen')
 
 def inputBoardScreen_onMouseMove(app, mouseX, mouseY):
     buttonClickedIndex = getButtonClicked(app.inputBoardScreenButtons, mouseX, mouseY)
@@ -65,6 +69,7 @@ def inputBoardScreen_onMouseMove(app, mouseX, mouseY):
         app.inputBoardScreenButtons[buttonClickedIndex]['hover'] =True
     else:
         setAllButtonHoverFalse(app.inputBoardScreenButtons)
+
 def inputBoardScreen_redrawAll(app):
     boardScreen_drawBoard(app)
     boardScreen_drawBoardBorder(app)
@@ -85,7 +90,7 @@ def drawSudokuNumbers(app, boardToDraw):
     cellWidth, cellHeight = getCellSize(app)
     for row in range(app.inputState.rows):
         for col in range(app.inputState.cols):
-            color = rgb(175, 125, 119) if not app.inputState.cellInOriginalBoard(row,col) else 'black'
+            color = 'black'
             cellLeft, cellTop = getCellLeftTop(app, row, col)
             cellX = cellLeft+cellWidth/2
             cellY = cellTop +cellHeight/2
@@ -117,16 +122,23 @@ def boardScreen_DrawSectionBoxes(app):
                     fill=None, border= app.sectionBoxesColor,
                     borderWidth=app.cellBorderWidth)
 #modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
-
 def boardScreen_drawCell(app, row, col):
     cellLeft, cellTop = getCellLeftTop(app, row, col)
     
     cellWidth, cellHeight = getCellSize(app)
-    color = None
+    color = getCellColor(app, row, col)
     drawRect(cellLeft, cellTop, cellWidth, cellHeight,
              fill=color, border= app.lineColor,
              borderWidth=app.cellBorderWidth)
 #modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
+
+def getCellColor(app, row, col):
+    selectedRow, selectedCol = app.inputSelectedCell
+    color = None
+    if (row, col) == app.inputSelectedCell:
+        color = rgb(183, 202, 241)
+    return color
+
 
 def getCellLeftTop(app, row, col):
     cellWidth, cellHeight = getCellSize(app)

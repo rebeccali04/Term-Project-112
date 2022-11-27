@@ -14,8 +14,8 @@ from Buttons import *
 # inputing numbers function
 
 def boardScreen_onScreenStart(app):
-    app.boardLeft = 100 #app.width*0.1
-    app.boardTop = 100 #app.height*0.15
+    app.boardLeft = app.width*0.1
+    app.boardTop = app.height*0.15
     boardSideLen = min(app.width*0.8,app.height*0.8)
     app.boardWidth = boardSideLen
     app.boardHeight = boardSideLen
@@ -26,6 +26,8 @@ def boardScreen_onScreenStart(app):
     restartBoardScreen(app)
 
 def restartBoardScreen(app):
+    app.currInputMode = 'mouse' #other option include mouse, key
+    app.currMode = 'easy' #delete after testing
     app.boardScreenButtons = []
     #load board
     board = loadRandomBoard(app.currMode)
@@ -38,19 +40,13 @@ def restartBoardScreen(app):
         app.usingAutoLegals = False
     else: 
         app.usingAutoLegals =True
-    
 
 def boardScreen_onKeyPress(app, key):
     if key == 'space': setActiveScreen('mainScreen')
     if key.isdigit():
-        row,col = app.selectedCell
-        val =int(key)
-        if not app.state.cellInOriginalBoard(row,col):
-            if app.inputingLegals: 
-                if not app.usingAutoLegals:
-                    app.state.inputLegals(row, col, val)
-            else:
-                app.state.set(row, col,val )
+        num =int(key)
+        doInputNum(app, num)
+        
     if key =='s':
         #play singleton
         app.state.playHint1()
@@ -66,6 +62,16 @@ def boardScreen_onKeyPress(app, key):
     elif key == 'up':    moveSelection(app ,-1, 0)
     elif key == 'down':  moveSelection(app, +1, 0) 
     #modified, from https://cs3-112-f22.academy.cs.cmu.edu/notes/4189
+
+def doInputNum(app, num):
+    row,col = app.selectedCell
+    row,col = app.selectedCell
+    if not app.state.cellInOriginalBoard(row,col):
+        if app.inputingLegals: 
+            if not app.usingAutoLegals:
+                app.state.inputLegals(row, col, num)
+        else:
+            app.state.set(row, col,num )
 
 def moveSelection(app, drow, dcol):
     if app.selectedCell != None:
@@ -96,7 +102,16 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
         print('New Game')
     elif buttonClickedIndex ==3:
         app.usingAutoLegals = not app.usingAutoLegals 
-        print('legals toggle')
+    #mouse only need a tggle for inputingLegals
+
+    #check for numPad
+    numPadCell = getNumPadCell(app, mouseX, mouseY)
+    if numPadCell!=None:
+        if numPadCell == 0:
+            print('toggle setting legals') #add setting candidate toggle
+        else:
+            doInputNum(app, numPadCell)
+
 
 
 
@@ -114,7 +129,7 @@ def boardScreen_redrawAll(app):
     drawSudokuNumbers(app, app.state.userBoard)
     drawAllLegals(app)
     drawAllButtons(app.boardScreenButtons)
-    
+    drawNumPad(app)
     ########################################################
     #                      Buttons                         #
     ########################################################
@@ -125,11 +140,40 @@ def setAllButtons(app):
     setButton(app.boardScreenButtons, 'Singleton',125 , y,length =100, height =40)
     setButton(app.boardScreenButtons, 'New Game',250 , y,length =100, height =40)
     setButton(app.boardScreenButtons, 'Legals',375 , y,length =100, height =40)
-
+    #mouse only mode
+    if app.currInputMode =='mouse':
+        setButton(app.boardScreenButtons, 'Legals',app.width -50 , app.boardTop -50,length =50, height =50)
 
     ########################################################
     #                      HELPERS                         #
     ########################################################
+
+def drawNumPad(app):
+    startTop, w, h = getNumPadInfo(app)
+    for num in range(1,10): #numbers 1 to 9
+        drawNumPadCell(app,num, startTop, w, h)
+        drawNumPadNumbers(app,num, startTop, w,h )
+def getNumPadInfo(app):
+    #startTop, w, h
+    return (app.boardTop, 50,50)
+def drawNumPadCell(app,num, startTop, w,h ):
+    rectX = app.width -w
+    rectY = startTop +(num-1)*h
+    drawRect(rectX, rectY, w, h, fill =None, border ='black')
+
+def drawNumPadNumbers(app,num, startTop, w,h ):
+    numX = app.width -w/2
+    numY = startTop +(num-1)*h +h/2
+    drawLabel(str(num), numX, numY, size = app.height//40, bold = True)
+
+def getNumPadCell(app, mouseX, mouseY):
+    startTop, w, h = getNumPadInfo(app)
+    for num in range(1,10):
+        rectX = app.width - w
+        rectY = startTop + (num-1)*h
+        if rectX <= mouseX <= rectX+w and rectY <= mouseY <= rectY+h:
+            return num
+    return None
 
 def drawSudokuNumbers(app, boardToDraw):
     cellWidth, cellHeight = getCellSize(app)
@@ -141,7 +185,7 @@ def drawSudokuNumbers(app, boardToDraw):
             cellY = cellTop +cellHeight/2
             num =boardToDraw[row][col]
             if num!=0:
-                drawLabel(str(num),cellX, cellY, size = app.width//20, bold = True, fill =color)
+                drawLabel(str(num),cellX, cellY, size = app.height//25, bold = True, fill =color)
                 
 def drawAllLegals(app):
     if app.usingAutoLegals:
