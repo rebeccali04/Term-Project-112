@@ -3,6 +3,7 @@ from readingInputs import *
 
 class State:
     def __init__(self, board):
+        self.gameOver = False
         self.rows = 9
         self.cols = 9
         self.originalBoard = copy.deepcopy(board) #stores og board
@@ -10,7 +11,6 @@ class State:
         self.legals = self.getInitalLegals()
         self.setInitalBoard(board)
         self.userLegals =self.getInitalLegals()
-        
 
     def setInitalBoard(self,board):
         for row in range(self.rows):
@@ -40,6 +40,7 @@ class State:
                 if 0 in rowList:
                     return False
             return True
+    
     #eq
     #repr
     #hash
@@ -129,6 +130,7 @@ class State:
             for location in region:
                 row, col = location
                 self.ban(row,col,{value})
+        self.checkForGameOver()
 
     def banUserLegals(self, row, col, values):
         #gets rid of the legal values in this row col cell
@@ -173,6 +175,30 @@ class State:
             legalSet.add(val)
     #need to test
 
+    def checkForGameOver(self):
+        if self.isGameOver():
+            self.gameOver =True
+        
+    
+    def isGameOver(self):
+        if not self.boardAllFilled():
+            return False
+        allRegions = self.getAllRegions()
+        for region in allRegions:
+            if not self.hasNonZeroDup(region):
+                return False
+        return True
+
+    def hasNonZeroDup(self, region):
+        seenVals = []
+        for row, col in region:
+            val = self.userBoard[row][col]
+            if val!=0 and val in seenVals:
+                return True
+            else:
+                seenVals.append(val)
+        return False
+
     ########HINTS##############
     def playHint1(self):
         for row in range(self.rows):
@@ -202,20 +228,21 @@ class State:
 #https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
 
 def testingState():
-    testBlock = State(getBoardIn2dList('easy-01.png.txt'))
+    testBlock = State(getBoardIn2dList('images-boards-and-solutions-for-1-thru-3/easy-01-solution.png-solution.txt'))
     # testBlock.legals = [[{1, 2, 3, 4, 5, 6, 7, 8, 9}, {1, 2, 3, 4, 5, 6, 7, 8, 9}],[]]
     # testBlock.set(0,1,8)
     # testBlock.ban(0,0,{1,2,3})
     # print(testBlock.legals)
     # testBlock.unban(0,0,{1,2,6})
     print('testing state class----------------------------\n')
-    prevLegals = testBlock.legals
-    currLegals = testBlock.legals[0][1]
-    testBlock.set(0,1,8)
-    testBlock.printLegals()
-    testBlock.undoSet(0,1, currLegals)
-    print('-------------------')
-    testBlock.printLegals()
-    assert(testBlock.legals ==prevLegals)
+    # prevLegals = testBlock.legals
+    # currLegals = testBlock.legals[0][1]
+    # testBlock.set(0,1,8)
+    # testBlock.printLegals()
+    # testBlock.undoSet(0,1, currLegals)
+    # print('-------------------')
+    # testBlock.printLegals()
+    # assert(testBlock.legals ==prevLegals)
+    
     print('passed')
 # testingState()

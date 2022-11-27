@@ -154,7 +154,7 @@ def testBacktracker(filters):
         print(f'Total time: {round(time1-time0, 1)} seconds')
         
 def testBoardSolver():
-    testBacktracker(filters=['hard'])
+    testBacktracker(filters=['easy'])
     # problems with 'easy-03' and beyond
     # boardName = 'hard-01'
     # print('testingBoardSolver')

@@ -26,7 +26,7 @@ def boardScreen_onScreenStart(app):
     restartBoardScreen(app)
 
 def restartBoardScreen(app):
-    app.currInputMode = 'mouse' #other option include mouse, key
+    app.currInputMode = 'normal' #other option include mouse, key
     app.currMode = 'easy' #delete after testing
     app.boardScreenButtons = []
     #load board
@@ -34,33 +34,42 @@ def restartBoardScreen(app):
     app.state = State(board)
     app.selectedCell = (0,0)
     app.inputingLegals =False
-    setAllButtons(app)
+    app.gameOver = False
+    
     #move to mode
     if app.currMode == 'easy':
         app.usingAutoLegals = False
     else: 
         app.usingAutoLegals =True
+    setAllButtons(app)
 
 def boardScreen_onKeyPress(app, key):
-    if key == 'space': setActiveScreen('mainScreen')
-    if key.isdigit():
-        num =int(key)
-        doInputNum(app, num)
+    if key =='m':
+        app.currInputMode = 'mouse'
+    elif key =='n':
+        app.currInputMode = 'normal'
+    elif key == 'k':
+        app.currInputMode = 'key'
+    if app.currInputMode != 'mouse':
+        if key == 'space': setActiveScreen('mainScreen')
+        if key.isdigit():
+            num =int(key)
+            doInputNum(app, num)
+            
+        if key =='s':
+            #play singleton
+            app.state.playHint1()
+        if key =='l':
+            app.inputingLegals =True
+        if key =='a': 
+            app.usingAutoLegals =not app.usingAutoLegals
         
-    if key =='s':
-        #play singleton
-        app.state.playHint1()
-    if key =='l':
-        app.inputingLegals =True
-    if key =='a': 
-        app.usingAutoLegals =not app.usingAutoLegals
-    
-    #up down left right
-    
-    if key == 'left':    moveSelection(app, 0, -1)
-    elif key == 'right': moveSelection(app, 0, +1)
-    elif key == 'up':    moveSelection(app ,-1, 0)
-    elif key == 'down':  moveSelection(app, +1, 0) 
+        #up down left right
+        
+        if key == 'left':    moveSelection(app, 0, -1)
+        elif key == 'right': moveSelection(app, 0, +1)
+        elif key == 'up':    moveSelection(app ,-1, 0)
+        elif key == 'down':  moveSelection(app, +1, 0) 
     #modified, from https://cs3-112-f22.academy.cs.cmu.edu/notes/4189
 
 def doInputNum(app, num):
@@ -102,18 +111,22 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
         print('New Game')
     elif buttonClickedIndex ==3:
         app.usingAutoLegals = not app.usingAutoLegals 
-    #mouse only need a tggle for inputingLegals
 
-    #check for numPad
-    numPadCell = getNumPadCell(app, mouseX, mouseY)
-    if numPadCell!=None:
-        if numPadCell == 0:
-            print('toggle setting legals') #add setting candidate toggle
-        else:
-            doInputNum(app, numPadCell)
+    if app.currInputMode == 'mouse':
+        #check for numPad
+        numPadCell = getNumPadCell(app, mouseX, mouseY)
+        if numPadCell!=None:
+            if numPadCell == 0:
+                print('toggle setting legals') #add setting candidate toggle
+                app.inputingLegals = not app.inputingLegals
+            else:
+                doInputNum(app, numPadCell)
 
 
-
+# def boardScreen_onStep(app):
+#     if app.state.isGameOver():
+#         app.gameOver = True
+#         print('done with the board')
 
 def boardScreen_onMouseMove(app, mouseX, mouseY):
     buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
@@ -129,7 +142,10 @@ def boardScreen_redrawAll(app):
     drawSudokuNumbers(app, app.state.userBoard)
     drawAllLegals(app)
     drawAllButtons(app.boardScreenButtons)
-    drawNumPad(app)
+    drawMsg(app)
+    #mouse only
+    if app.currInputMode == 'mouse':
+        drawNumPad(app)
     ########################################################
     #                      Buttons                         #
     ########################################################
@@ -139,36 +155,49 @@ def setAllButtons(app):
     setButton(app.boardScreenButtons, 'Back',50 , y, length =60, height =40)
     setButton(app.boardScreenButtons, 'Singleton',125 , y,length =100, height =40)
     setButton(app.boardScreenButtons, 'New Game',250 , y,length =100, height =40)
-    setButton(app.boardScreenButtons, 'Legals',375 , y,length =100, height =40)
-    #mouse only mode
-    if app.currInputMode =='mouse':
-        setButton(app.boardScreenButtons, 'Legals',app.width -50 , app.boardTop -50,length =50, height =50)
+    setButton(app.boardScreenButtons, 'Auto/Manual Legals',375 , y,length =150, height =40) #make togging button
+    
 
     ########################################################
     #                      HELPERS                         #
     ########################################################
+def drawMsg(app):
+    if app.state.gameOver:
+        drawRect(app.width/2, app.height/2, 500, 50, align = 'center', fill  = rgb(196, 156, 145))
+        drawLabel('Congrats, you finished the game', app.width/2, app.height/2, size = 20, bold = True, fill = 'white') #fix this 
+        
 
 def drawNumPad(app):
     startTop, w, h = getNumPadInfo(app)
-    for num in range(1,10): #numbers 1 to 9
+    #draw the legal button
+    
+    for num in range(0,10): #numbers 1 to 9
         drawNumPadCell(app,num, startTop, w, h)
         drawNumPadNumbers(app,num, startTop, w,h )
+
 def getNumPadInfo(app):
     #startTop, w, h
     return (app.boardTop, 50,50)
+
 def drawNumPadCell(app,num, startTop, w,h ):
     rectX = app.width -w
     rectY = startTop +(num-1)*h
-    drawRect(rectX, rectY, w, h, fill =None, border ='black')
+    color =None
+    if num ==0 and app.inputingLegals:
+        color = rgb(183, 202, 241)
+    drawRect(rectX, rectY, w, h, fill =color, border ='black')
 
 def drawNumPadNumbers(app,num, startTop, w,h ):
     numX = app.width -w/2
     numY = startTop +(num-1)*h +h/2
-    drawLabel(str(num), numX, numY, size = app.height//40, bold = True)
+    msg = str(num)
+    if num ==0:
+        msg = 'Legal'
+    drawLabel(msg, numX, numY, size = app.height//40, bold = True)
 
 def getNumPadCell(app, mouseX, mouseY):
     startTop, w, h = getNumPadInfo(app)
-    for num in range(1,10):
+    for num in range(0,10):
         rectX = app.width - w
         rectY = startTop + (num-1)*h
         if rectX <= mouseX <= rectX+w and rectY <= mouseY <= rectY+h:

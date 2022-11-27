@@ -10,6 +10,6 @@ from boardScreen import *
 ##################################
 
 def main():
-    runAppWithScreens(initialScreen='boardScreen', width=800, height =600) 
+    runAppWithScreens(initialScreen='mainScreen', width=800, height =600) 
 
 main()
