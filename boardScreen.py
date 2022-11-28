@@ -50,6 +50,10 @@ def loadNewBoard(app, boardContent):
     newBoard(app)
 
 def boardScreen_onKeyPress(app, key):
+    if key == 'h':
+        print('help')
+        setActiveScreen('helpScreen')
+
     if key =='m':
         app.currInputMode = 'mouse'
     elif key =='n':
@@ -168,8 +172,8 @@ def setAllButtons(app):
     ########################################################
 def drawMsg(app):
     if app.state.gameOver:
-        drawRect(app.width/2, app.height/2, 500, 50, align = 'center', fill  = rgb(196, 156, 145))
-        drawLabel('Congrats, you finished the game', app.width/2, app.height/2, size = 20, bold = True, fill = 'white') #fix this 
+        drawRect(app.boardLeft+app.boardWidth/2, app.boardTop + app.boardHeight/2, 500, 50, align = 'center', fill  = rgb(196, 156, 145))
+        drawLabel('Congrats, you finished the game', app.boardLeft+app.boardWidth/2, app.boardTop + app.boardHeight/2, size = 20, bold = True, fill = 'white') 
         
 
 def drawNumPad(app):
