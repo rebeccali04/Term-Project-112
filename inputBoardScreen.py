@@ -2,6 +2,7 @@ try: from cmu_cs3_graphics import *
 except: from cmu_graphics import *
 
 from runAppWithScreens import *
+from boardScreen import loadNewBoard
 from Buttons import *
 from State import *
 import math
@@ -15,11 +16,26 @@ def restartInputBoardScreen(app):
     app.inputBoardScreenButtons=[]
     app.inputSelectedCell = (0,0)
     setAllButtons(app)
+    #text file input
+    app.clickedInputBox = False
+    app.inputStr = ''
+
+def inputBoardScreen_redrawAll(app):
+    boardScreen_drawBoard(app)
+    boardScreen_drawBoardBorder(app)
+    boardScreen_DrawSectionBoxes(app)
+    drawSudokuNumbers(app, app.inputState.userBoard)
+    drawAllButtons(app.inputBoardScreenButtons)
+    drawFileInputItems(app)
 
 def inputBoardScreen_onKeyPress(app, key):
-    if key == 'space': 
-        # app.currScreen = 'boardScreen'
-        setActiveScreen('mainScreen')
+    #input text file
+    if app.clickedInputBox:
+        app.inputStr +=key
+        return
+    # if key == 'space': 
+    #     # app.currScreen = 'boardScreen'
+    #     setActiveScreen('mainScreen')
     if key.isdigit():
         row,col = app.inputSelectedCell
         val =int(key)
@@ -30,6 +46,8 @@ def inputBoardScreen_onKeyPress(app, key):
     elif key == 'up':    moveSelection(app ,-1, 0)
     elif key == 'down':  moveSelection(app, +1, 0) 
     #modified, from https://cs3-112-f22.academy.cs.cmu.edu/notes/4189
+
+    
 
 def moveSelection(app, drow, dcol):
     if app.inputSelectedCell != None:
@@ -52,16 +70,29 @@ def inputBoardScreen_onMousePress(app,mouseX, mouseY):
     elif buttonClickedIndex ==1:
         #clear
         restartInputBoardScreen(app)
-
+        app.inputStr = ''
     elif buttonClickedIndex ==2:
         #done
-        print('done button')
-        app.inputState.originalBoard = copy.deepcopy(app.inputState.userBoard)
-        app.state = copy.deepcopy(app.inputState) #test
+        if app.inputStr != '':
+            try: 
+                boardPath = loadBoardPaths([app.inputStr])
+                assert(len(boardPath)==1)
+                loadNewBoard(app,getBoardIn2dList(boardPath[0]))
+            except:
+                app.inputStr = "Can't find this file"
+        else:
+            loadNewBoard(app.inputState.userBoard)
+            
     elif buttonClickedIndex ==3:
         #play
         print('play button')
         setActiveScreen('boardScreen')
+
+    #input cell
+    if clickInInputCell(app, mouseX, mouseY):
+        app.clickedInputBox =True
+    else: 
+        app.clickedInputBox =False
 
 def inputBoardScreen_onMouseMove(app, mouseX, mouseY):
     buttonClickedIndex = getButtonClicked(app.inputBoardScreenButtons, mouseX, mouseY)
@@ -70,12 +101,6 @@ def inputBoardScreen_onMouseMove(app, mouseX, mouseY):
     else:
         setAllButtonHoverFalse(app.inputBoardScreenButtons)
 
-def inputBoardScreen_redrawAll(app):
-    boardScreen_drawBoard(app)
-    boardScreen_drawBoardBorder(app)
-    boardScreen_DrawSectionBoxes(app)
-    drawSudokuNumbers(app, app.inputState.userBoard)
-    drawAllButtons(app.inputBoardScreenButtons)
 
 
 
@@ -96,7 +121,7 @@ def drawSudokuNumbers(app, boardToDraw):
             cellY = cellTop +cellHeight/2
             num =boardToDraw[row][col]
             if num!=0:
-                drawLabel(str(num),cellX, cellY, size = app.width//20, bold = True, fill =color)
+                drawLabel(str(num),cellX, cellY, size = app.height//25, bold = True, fill =color)
 
 def boardScreen_drawBoard(app):
     for row in range(app.inputState.rows):
@@ -122,6 +147,7 @@ def boardScreen_DrawSectionBoxes(app):
                     fill=None, border= app.sectionBoxesColor,
                     borderWidth=app.cellBorderWidth)
 #modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
+
 def boardScreen_drawCell(app, row, col):
     cellLeft, cellTop = getCellLeftTop(app, row, col)
     
@@ -138,7 +164,7 @@ def getCellColor(app, row, col):
     if (row, col) == app.inputSelectedCell:
         color = rgb(183, 202, 241)
     return color
-
+#modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
 def getCellLeftTop(app, row, col):
     cellWidth, cellHeight = getCellSize(app)
@@ -164,15 +190,40 @@ def getCell(app, x, y):
         return (row, col)
     else:
         return None
-
 #modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 
-#buttons
+
+########################
+#      Buttons         #
+########################
 def setAllButtons(app):
     y = 40
     setButton(app.inputBoardScreenButtons, 'Back',50 , y, length =60, height =40)
     setButton(app.inputBoardScreenButtons, 'Clear',125 , y,length =100, height =40)
     setButton(app.inputBoardScreenButtons, 'Done',250 , y,length =100, height =40)
     setButton(app.inputBoardScreenButtons, 'Play',375 , y,length =100, height =40)
+
+
+
+########################
+#      FileImport         #
+########################
+
+def drawFileInputItems(app):
+    drawLabel('To enter a board by text file,', app.width -230, 125, size =14, align ='left')
+    drawLabel('place the file in the boards folder', app.width -230, 150, size =14, align ='left')
+    drawLabel('then type your file name (after board\)', app.width -230, 175, size =14, align ='left')
+    drawRect(app.width -230, 200, 200, 30, fill = rgb(217, 231, 241))
+    drawLabel(app.inputStr, app.width -230, 215, size =15, align ='left', fill = rgb(175, 125, 119))
+
+
+def clickInInputCell(app,mouseX, mouseY):
+    #200 30
+    if app.width-230 <= mouseX <= app.width-230 +200 and 200 <= mouseY <= 200+30:
+        return True
+    else:
+        return False
+
+
 
     

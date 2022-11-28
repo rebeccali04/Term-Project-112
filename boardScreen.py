@@ -26,21 +26,28 @@ def boardScreen_onScreenStart(app):
     restartBoardScreen(app)
 
 def restartBoardScreen(app):
+    app.boardContent =loadRandomBoard(app.currMode)
     app.currInputMode = 'normal' #other option include mouse, key
     app.boardScreenButtons = []
     #load board
-    board = loadRandomBoard(app.currMode)
-    app.state = State(board)
+    newBoard(app)
     app.selectedCell = (0,0)
     app.inputingLegals =False
     app.gameOver = False
-    
+
+def newBoard(app):
+    app.state = State(app.boardContent)
     #move to mode
     if app.currMode == 'easy':
         app.usingAutoLegals = False
     else: 
         app.usingAutoLegals =True
     setAllButtons(app)
+
+#optional if switch board
+def loadNewBoard(app, boardContent):
+    app.boardContent = boardContent
+    newBoard(app)
 
 def boardScreen_onKeyPress(app, key):
     if key =='m':
@@ -55,7 +62,7 @@ def boardScreen_onKeyPress(app, key):
             num =int(key)
             doInputNum(app, num)
             
-        if key =='s':
+        if key =='s' and app.currMode != 'easy':
             #play singleton
             app.state.playHint1()
         if key =='l':
@@ -102,8 +109,7 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
     buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
     if buttonClickedIndex ==0:
         setActiveScreen('mainScreen')
-    elif buttonClickedIndex ==1:
-        print('Hint')
+    elif buttonClickedIndex ==1 and app.currMode != 'easy':
         app.state.playHint1()
     elif buttonClickedIndex ==2:
         restartBoardScreen(app)

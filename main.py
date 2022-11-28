@@ -12,6 +12,6 @@ from helpScreen import *
 ##################################
 
 def main():
-    runAppWithScreens(initialScreen='mainScreen', width=800, height =600) 
+    runAppWithScreens(initialScreen='mainScreen', width=800, height =600)
 
 main()

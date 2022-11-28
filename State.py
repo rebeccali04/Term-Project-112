@@ -185,7 +185,7 @@ class State:
             return False
         allRegions = self.getAllRegions()
         for region in allRegions:
-            if not self.hasNonZeroDup(region):
+            if self.hasNonZeroDup(region):
                 return False
         return True
 
@@ -213,7 +213,7 @@ class State:
 #          Test and debug               #
 #########################################
     #fix, can't find print2dList
-    def printBoard(self): print2dList(self.board)
+    # def printBoard(self): print2dList(self.board)
     def printLegals(self):
         colWidth = 4
         for col in range(9):
@@ -228,20 +228,24 @@ class State:
 #https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
 
 def testingState():
+    print('testing state class----------------------------\n')
+
     testBlock = State(getBoardIn2dList('images-boards-and-solutions-for-1-thru-3/easy-01-solution.png-solution.txt'))
     # testBlock.legals = [[{1, 2, 3, 4, 5, 6, 7, 8, 9}, {1, 2, 3, 4, 5, 6, 7, 8, 9}],[]]
     # testBlock.set(0,1,8)
     # testBlock.ban(0,0,{1,2,3})
     # print(testBlock.legals)
     # testBlock.unban(0,0,{1,2,6})
-    print('testing state class----------------------------\n')
+    print(testBlock.userBoard)
+    print(testBlock.checkForGameOver())
+    print(testBlock.gameOver)
     # prevLegals = testBlock.legals
     # currLegals = testBlock.legals[0][1]
     # testBlock.set(0,1,8)
     # testBlock.printLegals()
     # testBlock.undoSet(0,1, currLegals)
     # print('-------------------')
-    testBlock.printBoard()
+    # testBlock.printBoard()
     # assert(testBlock.legals ==prevLegals)
     
     print('passed')
