@@ -213,7 +213,7 @@ class State:
 #          Test and debug               #
 #########################################
     #fix, can't find print2dList
-    # def printBoard(self): print2dList(self.board)
+    def printBoard(self): print2dList(self.board)
     def printLegals(self):
         colWidth = 4
         for col in range(9):
@@ -241,7 +241,7 @@ def testingState():
     # testBlock.printLegals()
     # testBlock.undoSet(0,1, currLegals)
     # print('-------------------')
-    # testBlock.printLegals()
+    testBlock.printBoard()
     # assert(testBlock.legals ==prevLegals)
     
     print('passed')

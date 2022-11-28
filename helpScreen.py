@@ -8,5 +8,5 @@ from Buttons import *
 def helpScreen_onScreenStart(app):
     pass
 
-def modeScreen_redrawAll(app):
-    pass
+def helpScreen_redrawAll(app):
+    drawRect(30,30,30,30)

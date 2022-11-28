@@ -9,7 +9,7 @@ from Buttons import *
 
 def modeScreen_onScreenStart(app):
     print('this is the mode screen')
-    app.mainScreenButtons = [] #(msg, top, left, length, height, hover)
+    app.modeScreenButtons = [] #(msg, top, left, length, height, hover)
     setAllButtons(app)
 
 def modeScreen_onKeyPress(app, key):
@@ -20,22 +20,29 @@ def modeScreen_onKeyPress(app, key):
 
 def modeScreen_redrawAll(app):
     drawTitle(app, "Mode Selection",)
-    drawAllButtons(app.mainScreenButtons)
+    drawAllButtons(app.modeScreenButtons)
     drawLabel(f'Your current mode is {app.currMode.upper()}', 200,app.width/2)
+
+def modeScreen_onMouseMove(app, mouseX, mouseY):
+    buttonClickedIndex = getButtonClicked(app.modeScreenButtons, mouseX, mouseY)
+    if buttonClickedIndex != None:
+        app.modeScreenButtons[buttonClickedIndex]['hover'] =True
+    else:
+        setAllButtonHoverFalse(app.modeScreenButtons)
 
 def drawTitle(app, msg, size =40):
     centerX = app.width/2
     drawLabel(msg, centerX, 150, size = size, bold = True, fill = rgb(196, 156, 145))
 
 def modeScreen_onMouseMove(app, mouseX, mouseY):
-    buttonClickedIndex = getButtonClicked(app.mainScreenButtons, mouseX, mouseY)
+    buttonClickedIndex = getButtonClicked(app.modeScreenButtons, mouseX, mouseY)
     if buttonClickedIndex != None:
-        app.mainScreenButtons[buttonClickedIndex]['hover'] =True
+        app.modeScreenButtons[buttonClickedIndex]['hover'] =True
     else:
-        setAllButtonHoverFalse(app.mainScreenButtons)
+        setAllButtonHoverFalse(app.modeScreenButtons)
 
 def modeScreen_onMousePress(app, mouseX, mouseY):
-    buttonClickedIndex = getButtonClicked(app.mainScreenButtons, mouseX, mouseY)
+    buttonClickedIndex = getButtonClicked(app.modeScreenButtons, mouseX, mouseY)
     if buttonClickedIndex ==0:
         # Easy
         app.currMode = 'easy'
@@ -59,9 +66,9 @@ def modeScreen_onMousePress(app, mouseX, mouseY):
 def setAllButtons(app):
     centerX = app.width/2 - 150/2
     startY = 225
-    setButton(app.mainScreenButtons, 'EASY',centerX , startY,)
-    setButton(app.mainScreenButtons, 'MEDIUM', centerX, startY+80*1,)
-    setButton(app.mainScreenButtons, 'HARD', centerX, startY+80*2,)
-    setButton(app.mainScreenButtons, 'EXPERT', centerX, startY+80*3,)
-    setButton(app.mainScreenButtons, 'EVIL', centerX, startY+80*4,)
-    setButton(app.mainScreenButtons, 'Back',50 , 40, length =60, height =40)
+    setButton(app.modeScreenButtons, 'EASY',centerX , startY,)
+    setButton(app.modeScreenButtons, 'MEDIUM', centerX, startY+80*1,)
+    setButton(app.modeScreenButtons, 'HARD', centerX, startY+80*2,)
+    setButton(app.modeScreenButtons, 'EXPERT', centerX, startY+80*3,)
+    setButton(app.modeScreenButtons, 'EVIL', centerX, startY+80*4,)
+    setButton(app.modeScreenButtons, 'Back',50 , 40, length =60, height =40)

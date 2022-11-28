@@ -27,7 +27,6 @@ def boardScreen_onScreenStart(app):
 
 def restartBoardScreen(app):
     app.currInputMode = 'normal' #other option include mouse, key
-    app.currMode = 'easy' #delete after testing
     app.boardScreenButtons = []
     #load board
     board = loadRandomBoard(app.currMode)
