@@ -1,9 +1,11 @@
 import copy
 from readingInputs import *
 
+
 class State:
     def __init__(self, board):
         self.gameOver = False
+        self.gameStarted = False
         self.rows = 9
         self.cols = 9
         self.originalBoard = copy.deepcopy(board) #stores og board
@@ -11,6 +13,9 @@ class State:
         self.legals = self.getInitalLegals()
         self.setInitalBoard(board)
         self.userLegals =self.getInitalLegals()
+        self.gameStarted = True
+        self.undoList = []
+        self.redoList = []
 
     def setInitalBoard(self,board):
         for row in range(self.rows):
@@ -120,6 +125,10 @@ class State:
         return list(resSet)
 
     def set(self, row, col, value):
+        #saves prev copy in undoList
+        if self.gameStarted:
+            self.undoList.append(copy.deepcopy(self))
+
         # place a value down on the board 
         self.userBoard[row][col] = value
         # ban all vals of this cell
@@ -131,6 +140,10 @@ class State:
                 row, col = location
                 self.ban(row,col,{value})
         self.checkForGameOver()
+
+        #clears redoList
+        if self.gameStarted:
+            self.redoList = []
 
     def banUserLegals(self, row, col, values):
         #gets rid of the legal values in this row col cell
@@ -200,6 +213,17 @@ class State:
         return False
 
     ########HINTS##############
+
+    #returns the cell to highlight
+    def getHint1(self):
+        for row in range(self.rows):
+            for col in range(self.cols):
+                legalSet =self.legals[row][col]
+                if len(legalSet) ==1:
+                    return (row,col)
+        # will return none if can't do anything
+
+    #plays the move
     def playHint1(self):
         for row in range(self.rows):
             for col in range(self.cols):
@@ -207,6 +231,30 @@ class State:
                 if len(legalSet) ==1:
                     self.set(row, col, legalSet.pop())
                     return 
+        # will return none if can't do anything
+    
+
+    #returns the cell to highlight
+    def getHint2(self):
+        return 42
+    
+    def playHint2(self):
+        return 42
+
+    #undo and redo
+    def undo(self):
+        if self.undoList == []: 
+            return self
+        prevState = self.undoList.pop()
+        prevState.redoList += self.redoList + [self]
+        return prevState
+    
+    def redo(self):
+        if self.redoList ==[]:
+            return self
+        futureState = self.redoList.pop()
+        futureState.undoList.append(self)
+        return futureState
 
 
 #########################################

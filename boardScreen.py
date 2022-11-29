@@ -50,6 +50,10 @@ def loadNewBoard(app, boardContent):
     newBoard(app)
 
 def boardScreen_onKeyPress(app, key):
+    if key =='u':
+        app.state = app.state.undo()
+    if key == 'r':
+        app.state = app.state.redo()
     if key == 'h':
         print('help')
         setActiveScreen('helpScreen')
@@ -131,11 +135,6 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
             else:
                 doInputNum(app, numPadCell)
 
-
-# def boardScreen_onStep(app):
-#     if app.state.isGameOver():
-#         app.gameOver = True
-#         print('done with the board')
 
 def boardScreen_onMouseMove(app, mouseX, mouseY):
     buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
