@@ -10,7 +10,6 @@ from boardScreen import *
 ##################################
 
 def modeScreen_onScreenStart(app):
-    print('this is the mode screen')
     app.modeScreenButtons = [] #(msg, top, left, length, height, hover)
     setAllButtons(app)
 

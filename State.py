@@ -160,9 +160,9 @@ class State:
         legalSet = self.legals[row][col]
         self.legals[row][col] = legalSet.difference(values) 
 
-    def unban(self, row, col, values):
+    def unban(self, row, col, currLegals):
         legalSet = self.legals[row][col]
-        self.legals[row][col] = legalSet.union(values)
+        self.legals[row][col] = legalSet.union(currLegals)
     
     def undoSet(self, row, col, currLegals): 
         cellVal = self.userBoard[row][col]
@@ -174,10 +174,15 @@ class State:
                     self.unban(*location, {cellVal})
 
     def canAdd(self,row,col, num):
+        #first test to see if this region if empty or not
+        if self.userBoard[row][col]!= 0:
+            return False
         allCellRegions = self.getCellRegions(row,col)
+
         for region in allCellRegions:
-            if num in region:
-                return False
+            for row, col in region:
+                if num == self.userBoard[row][col]:
+                    return False
         return True
     
     def inputLegals(self, row, col, val):
@@ -337,7 +342,7 @@ class State:
 #          Test and debug               #
 #########################################
     #fix, can't find print2dList
-    # def printBoard(self): print2dList(self.board)
+    def printBoard(self): print2dList(self.userBoard)
     def printLegals(self):
         colWidth = 4
         for col in range(9):
@@ -350,6 +355,35 @@ class State:
             print()
     def print(self): self.printBoard(); self.printLegals()
 #https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
+
+def repr2dList(L):
+    if (L == []): return '[]'
+    output = [ ]
+    rows = len(L)
+    cols = max([len(L[row]) for row in range(rows)])
+    M = [['']*cols for row in range(rows)]
+    for row in range(rows):
+        for col in range(len(L[row])):
+            M[row][col] = repr(L[row][col])
+    colWidths = [0] * cols
+    for col in range(cols):
+        colWidths[col] = max([len(M[row][col]) for row in range(rows)])
+    output.append('[\n')
+    for row in range(rows):
+        output.append(' [ ')
+        for col in range(cols):
+            if (col > 0):
+                output.append(', ' if col < len(L[row]) else '  ')
+            output.append(M[row][col].rjust(colWidths[col]))
+        output.append((' ],' if row < rows-1 else ' ]') + '\n')
+    output.append(']')
+    return ''.join(output)
+
+def print2dList(L):
+    print(repr2dList(L))
+
+
+
 
 def testingState():
     print('testing state class----------------------------\n')
@@ -371,7 +405,7 @@ def testingState():
     # afterUndoSetLegals = testBlock.legals
     # testBlock.printLegals()
     # assert(beforeSetLegals ==afterUndoSetLegals)
-    print(testBlock.getHint2())
+    testBlock.printBoard()
     
     # prevLegals = testBlock.legals
     # currLegals = testBlock.legals[0][1]

@@ -34,6 +34,7 @@ def restartBoardScreen(app):
     app.selectedCell = (0,0)
     app.inputingLegals =False
     app.gameOver = False
+    app.state.gameStarted = True
 
 def newBoard(app):
     app.state = State(app.boardContent)

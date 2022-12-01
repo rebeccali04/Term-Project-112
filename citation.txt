@@ -3,3 +3,7 @@ https://www.schemecolor.com/brown-and-blue-pastels.php
 #modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
 read more on this in the future?
 https://www.kristanix.com/sudokuepic/sudoku-solving-techniques.php 
+
+sockets
+https://realpython.com/python-sockets/#echo-client-and-server
+https://www.youtube.com/watch?v=3QiPPX-KeSc
