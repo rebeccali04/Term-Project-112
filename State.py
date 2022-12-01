@@ -1,6 +1,6 @@
 import copy
 from readingInputs import *
-
+import itertools
 
 class State:
     def __init__(self, board):
@@ -13,14 +13,14 @@ class State:
         self.legals = self.getInitalLegals()
         self.setInitalBoard(board)
         self.userLegals =self.getInitalLegals()
-        self.gameStarted = True
+        # self.gameStarted = True
         self.undoList = []
         self.redoList = []
 
     def setInitalBoard(self,board):
         for row in range(self.rows):
             for col in range(self.cols):
-                val =board[row][col]
+                val = board[row][col]
                 if val!= 0:
                     self.set(row,col,val)
         
@@ -164,9 +164,9 @@ class State:
         legalSet = self.legals[row][col]
         self.legals[row][col] = legalSet.union(values)
     
-    def undoSet(self, row, col, currLegals):
+    def undoSet(self, row, col, currLegals): 
         cellVal = self.userBoard[row][col]
-        self.userBoard[row][col] =0
+        self.userBoard[row][col] = 0
         self.unban(row, col, currLegals)
         for region in self.getCellRegions(row, col):
             for location in region:
@@ -235,11 +235,87 @@ class State:
     
 
     #returns the cell to highlight
-    def getHint2(self):
-        return 42
+    def getHint2(self): #logical error?
+        for N in range(2,5):
+            for region in self.getAllRegions():
+                groupings = itertools.combinations(region, N)
+                for group in groupings:
+                    legalSet = self.containSameNLegals(group, N) #returns a legal set if yes, none if not
+                    if legalSet !=None:
+                        banGroup = self.getsNewBans(legalSet, group, region)
+                        if banGroup != None:
+                            return banGroup
+        return None
     
-    def playHint2(self):
-        return 42
+    def playHint2(self): #logical error?
+        for N in range(2,5):
+            for region in self.getAllRegions():
+                groupings = itertools.combinations(region, N)
+                for group in groupings:
+                    legalSet = self.containSameNLegals(group, N) #returns a legal set if yes, none if not
+                    if legalSet !=None:
+                        banGroup = self.getsNewBans(legalSet, group, region)
+                        if banGroup != None:
+                            self.banGroupHint2(banGroup, legalSet)
+                            return 'success'
+        return None
+    
+    def banGroupHint2(self, banGroup,legalSet):
+        for row, col in banGroup:
+            self.ban(row,col, legalSet)
+
+    
+    def getLegals(self, row, col):
+        return self.legals[row][col]
+
+    def containSameNLegals(self, group , N):
+        legalSet =  self.getLegals(*group[0])
+        #is there even N of them
+        if len(legalSet) != N:
+            return None
+
+        for row, col in group:
+            currLegals = self.getLegals(row,col)
+            if legalSet != currLegals:
+                return None
+        return copy.copy(legalSet)
+    
+    def getsNewBans(self, legalSet, group, region):
+        res = []
+        for row, col in region: #for each of the cells in the region
+            if (row, col) in group: #optional
+                continue #looking for not in group
+            currLegals = self.getLegals(row, col)
+            if len(currLegals - legalSet ) ==1:
+                res.append((row,col))
+        if res ==[]: return None
+        else: return res
+
+    # def getHint2(self):
+    #     for region in self.getAllRegions():
+    #         for N in range(2, 6):
+    #             result = self.applyRule2(region, N)
+    #             if result != None:
+    #                 return result
+    #     return None
+
+    # def applyRule2(self, region, N):
+        '''
+        This method uses:
+            * itertools.combinations(region, N)
+            * self.valuesAreOnlyLegals(values, targets)
+            * self.getBansForAllRegions(values, targets)
+        '''
+
+    # def getBansForAllRegions(self, values, targets):
+    #     # The values (to ban) can stay in the targets, but they must be
+    #     # banned from all other cells in all regions that contain all
+    #     # the targets
+    #     bans = [ ]
+    #     for region in self.getAllRegionsThatContainTargets(targets):
+
+
+
 
     #undo and redo
     def undo(self):
@@ -278,15 +354,25 @@ class State:
 def testingState():
     print('testing state class----------------------------\n')
 
-    testBlock = State(getBoardIn2dList('images-boards-and-solutions-for-1-thru-3/easy-01-solution.png-solution.txt'))
-    # testBlock.legals = [[{1, 2, 3, 4, 5, 6, 7, 8, 9}, {1, 2, 3, 4, 5, 6, 7, 8, 9}],[]]
-    # testBlock.set(0,1,8)
-    # testBlock.ban(0,0,{1,2,3})
-    # print(testBlock.legals)
-    # testBlock.unban(0,0,{1,2,6})
-    print(testBlock.userBoard)
-    print(testBlock.checkForGameOver())
-    print(testBlock.gameOver)
+    testBlock = State(getBoardIn2dList(loadBoardPaths(['hard-02.png.txt'])[0]))
+    # testBlock.printLegals()
+    # row = 0
+    # col =1
+    # currLegal = testBlock.legals[row][col]
+    # beforeSetLegals = testBlock.legals
+    # print('current legals are' )
+    # print(currLegal)
+    # testBlock.set(row, col, 8)
+    # print('after set')
+    # testBlock.printLegals()
+    # print(testBlock.userBoard)
+    # print('after undo set')
+    # testBlock.undoSet(row, col,currLegal)
+    # afterUndoSetLegals = testBlock.legals
+    # testBlock.printLegals()
+    # assert(beforeSetLegals ==afterUndoSetLegals)
+    print(testBlock.getHint2())
+    
     # prevLegals = testBlock.legals
     # currLegals = testBlock.legals[0][1]
     # testBlock.set(0,1,8)

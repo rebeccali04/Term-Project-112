@@ -5,52 +5,80 @@ import time
 def boardSolverMain(stateObject,verbose):
     assert(isinstance(stateObject, State))
     state =copy.deepcopy(stateObject)
+    print('backtracter starting')
     potentialRes =solveBoard(state)
-    assert(potentialRes !=None)
+    # assert(potentialRes !=None)
     stateObject.solvedBoard = potentialRes
     return True
 
-# mutating version not working #this should 
-def solveBoard(state):
-    if state.boardAllFilled():
-        return state.userBoard #done
-    else:
-        #expands cell with least legals
-        row, col = findCellWithFewestLegals(state)
-        # if state.userBoard[row][col] ==0:
-        legalsSet = state.legals[row][col]
-        for num in legalsSet:
-            if isLegal(state, row,col, num):
-                currCellLegals = state.legals[row][col] #save for later
-                print(row,col)
-                state.set(row, col, num)
-                potentialRes =solveBoard(state)
-                
-                if potentialRes !=None:
-                    return potentialRes
-                #undo step
-                state.undoSet(row, col, currCellLegals)
-        return None
+# #cleaning mutating version still not working
+# def solveBoard(state):
+#     if state.boardAllFilled():
+#         return state.userBoard
+#     else:
+#         row,col = findCellWithFewestLegals(state)
+#         for val in state.legals[row][col]:
+#             #try them all
+#             state.set(row, col, val)
+#             #recurse
+#             sol = solveBoard(state)
+            
+#             if sol != None:
+#                 return sol 
+#             #undo step
+            
+#             state.undoSet(row,col, state.legals[row][col] ) 
+#         return None
 
-# #non mutating version
+
+
+
+# mutating version not working #this should 
 # def solveBoard(state):
 #     if state.boardAllFilled():
 #         return state.userBoard #done
 #     else:
-        
 #         #expands cell with least legals
+#         state.printLegals()
 #         row, col = findCellWithFewestLegals(state)
 #         # if state.userBoard[row][col] ==0:
-#         for num in state.legals[row][col]:
-#             if isLegal(state, row,col, num):
-#                 # print(f'trying {row},{col}')
-#                 #create a copy 
-#                 tempState = copy.deepcopy(state)
-#                 tempState.set(row,col, num)
-#                 potentialRes =solveBoard(tempState)
+#         legalsSet = state.legals[row][col]
+#         for num in legalsSet:
+#             if isLegal(state, row,col, num): #can also use canAdd
+#                 currCellLegals = state.legals[row][col] #save for later
+#                 state.set(row, col, num)
+#                 print(state.userBoard)
+#                 potentialRes =solveBoard(state)
+#                 print(potentialRes)
 #                 if potentialRes !=None:
 #                     return potentialRes
+#                 #undo step
+#                 # print(state.printLegals())
+#                 state.undoSet(row, col, currCellLegals)
+#                 #break here
+                
+#         print('returning None here')
 #         return None
+
+# #non mutating version
+def solveBoard(state):
+    if state.boardAllFilled():
+        return state.userBoard #done
+    else:
+        
+        #expands cell with least legals
+        row, col = findCellWithFewestLegals(state)
+        # if state.userBoard[row][col] ==0:
+        for num in state.legals[row][col]:
+            if isLegal(state, row,col, num):
+                # print(f'trying {row},{col}')
+                #create a copy 
+                tempState = copy.deepcopy(state)
+                tempState.set(row,col, num)
+                potentialRes =solveBoard(tempState)
+                if potentialRes !=None:
+                    return potentialRes
+        return None
 
 
 def findCellWithFewestLegals(state):
@@ -155,7 +183,7 @@ def testBacktracker(filters):
         
 def testBoardSolver():
     print('testing')
-    testBacktracker(filters=['expert'])
+    testBacktracker(filters=['hard'])
     print('done')
     # problems with 'easy-03' and beyond
     # boardName = 'hard-01'
@@ -172,7 +200,7 @@ def testBoardSolver():
     
 def boardSolverTesterWithTime():
     time0 = time.time()
-    boardName = 'evil-02' #taking 9 secs for evil 2
+    boardName = 'evil-01' #taking 9 secs for evil 2
     print(f'testing solver for {boardName}')
     testBlock = State(getBoardIn2dList(boardName+'.png.txt'))
     boardSolverMain(testBlock)
@@ -182,4 +210,4 @@ def boardSolverTesterWithTime():
     print(f'Time is {time1-time0} seconds')
 
 
-testBoardSolver()
+# testBoardSolver()

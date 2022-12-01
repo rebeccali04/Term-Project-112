@@ -50,6 +50,10 @@ def loadNewBoard(app, boardContent):
     newBoard(app)
 
 def boardScreen_onKeyPress(app, key):
+    if key == 'o':
+        print(app.state.getHint2())
+    if key == 'p':
+        print(app.state.playHint2())
     if key =='u':
         app.state = app.state.undo()
     if key == 'r':
