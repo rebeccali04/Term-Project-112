@@ -2,7 +2,7 @@ from State import *
 from readingInputs import *
 import time
 
-def boardSolverMain(stateObject,verbose):
+def boardSolverMain(stateObject,verbose= True):
     assert(isinstance(stateObject, State))
     state =copy.deepcopy(stateObject)
     
@@ -10,9 +10,10 @@ def boardSolverMain(stateObject,verbose):
     potentialRes =solveBoard(state)
     # assert(potentialRes !=None)
     stateObject.solvedBoard = potentialRes
-    return True
+    print('solution found')
+    return potentialRes
 
-# #cleaning mutating version still not working
+# #cleaning mutating version  working
 def solveBoard(state):
     if state.boardAllFilled():
         return state.userBoard
@@ -20,9 +21,6 @@ def solveBoard(state):
         row,col = findCellWithFewestLegals(state)
         prevStateLegals = state.legals[row][col]
         for val in prevStateLegals:
-            #try them all
-            # copyState = copy.deepcopy(state)
-            # state.printLegals()
             state.set(row, col, val)
             #recurse
             sol = solveBoard(state)
@@ -31,17 +29,6 @@ def solveBoard(state):
                 return sol 
             #undo step
             state.undoSet(row,col, prevStateLegals) 
-
-            ####test
-            # state.printBoard()
-            # print('========')
-            # copyState.printLegals()
-            # print('-------')
-            # state.printLegals()
-        
-            # assert(copyState.legals == state.legals) #not passing
-            # print('passed asserted')
-            ###Test
         return None
 
 
@@ -224,4 +211,4 @@ def boardSolverTesterWithTime():
     print(f'Time is {time1-time0} seconds')
 
 
-testBoardSolver()
+# testBoardSolver()

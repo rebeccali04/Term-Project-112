@@ -7,6 +7,7 @@ from boardScreen import *
 from inputBoardScreen import *
 from modeScreen import *
 from helpScreen import *
+from preferencesScreen import *
 ##################################
 # main
 ##################################

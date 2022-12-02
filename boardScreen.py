@@ -6,6 +6,7 @@ from State import *
 import math
 from readingInputs import *
 from Buttons import *
+from boardSolver import boardSolverMain
 ##################################
 # boardScreen
 ##################################
@@ -23,6 +24,7 @@ def boardScreen_onScreenStart(app):
     app.lineColor = 'gray'
     app.boarderColor ='black'
     app.sectionBoxesColor = 'black'
+    app.competitionMode = False
     restartBoardScreen(app)
 
 def restartBoardScreen(app):
@@ -35,6 +37,7 @@ def restartBoardScreen(app):
     app.inputingLegals =False
     app.gameOver = False
     app.state.gameStarted = True
+    app.prevStepLegals = None 
 
 def newBoard(app):
     app.state = State(app.boardContent)
@@ -43,6 +46,7 @@ def newBoard(app):
         app.usingAutoLegals = False
     else: 
         app.usingAutoLegals =True
+    app.solvedBoard = boardSolverMain(app.state) #will not modify
     setAllButtons(app)
 
 #optional if switch board
@@ -51,10 +55,14 @@ def loadNewBoard(app, boardContent):
     newBoard(app)
 
 def boardScreen_onKeyPress(app, key):
-    if key == 'o':
-        print(app.state.getHint2())
-    if key == 'p':
-        print(app.state.playHint2())
+    if not app.competitionMode:
+        if key == 'o':
+            highlightHint(app)
+        elif key == 'p':
+            doHint(app)
+        if key =='s' and app.currMode != 'easy':
+            #play singleton
+            app.state.playHint1()
     if key =='u':
         app.state = app.state.undo()
     if key == 'r':
@@ -71,13 +79,12 @@ def boardScreen_onKeyPress(app, key):
         app.currInputMode = 'key'
     if app.currInputMode != 'mouse':
         if key == 'space': setActiveScreen('mainScreen')
-        if key.isdigit():
+        if key == 'backspace' or key == '0':
+            app.state.undoSet(*app.selectedCell, app.prevStepLegals)
+        elif key.isdigit(): #not including 0
             num =int(key)
             doInputNum(app, num)
-            
-        if key =='s' and app.currMode != 'easy':
-            #play singleton
-            app.state.playHint1()
+        
         if key =='l':
             app.inputingLegals =True
         if key =='a': 
@@ -94,12 +101,14 @@ def boardScreen_onKeyPress(app, key):
 def doInputNum(app, num):
     row,col = app.selectedCell
     row,col = app.selectedCell
+    app.prevStepLegals = app.state.getLegals(row, col)
     if not app.state.cellInOriginalBoard(row,col):
         if app.inputingLegals: 
             if not app.usingAutoLegals:
                 app.state.inputLegals(row, col, num)
         else:
             app.state.set(row, col,num )
+    
 
 def moveSelection(app, drow, dcol):
     if app.selectedCell != None:
@@ -122,7 +131,7 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
     buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
     if buttonClickedIndex ==0:
         setActiveScreen('mainScreen')
-    elif buttonClickedIndex ==1 and app.currMode != 'easy':
+    elif buttonClickedIndex ==1 and app.currMode != 'easy' and not app.competitionMode:
         app.state.playHint1()
     elif buttonClickedIndex ==2:
         restartBoardScreen(app)
@@ -156,6 +165,7 @@ def boardScreen_redrawAll(app):
     drawAllLegals(app)
     drawAllButtons(app.boardScreenButtons)
     drawMsg(app)
+    # drawAllRedDot(app)
     #mouse only
     if app.currInputMode == 'mouse':
         drawNumPad(app)
@@ -170,15 +180,63 @@ def setAllButtons(app):
     setButton(app.boardScreenButtons, 'New Game',250 , y,length =100, height =40)
     setButton(app.boardScreenButtons, 'Auto/Manual Legals',375 , y,length =150, height =40) #make togging button
     
+    ########################################################
+    #                      Hints                         #
+    ########################################################
+def highlightHint(app):
+    hint1Res = app.state.getHint1()
+    if hint1Res != None:
+        row, col = hint1Res
+    else:
+        hint2Res = app.state.getHint2()
+        if hint2Res != None:
+            row, col = hint2Res
+        else:
+            return
+    #sets app.selection to this cell
+    app.selectedCell = row, col
+        
 
     ########################################################
     #                      HELPERS                         #
     ########################################################
+def drawAllRedDot(app):
+    #error checking kinda slow?
+    errorList = findErrors(app, app.solvedBoard, app.state.userBoard)
+    #competitionMode
+    if app.competitionMode and errorList !=[]:
+        assert(False) #crash if red
+    for row, col in errorList:
+        drawRedDot(app, row, col)
+
+def findErrors(app, solvedBoard, userBoard):
+    errorList = []
+    for row in range(app.state.rows):
+        for col in range(app.state.cols):
+            if userBoard[row][col] != 0: #only check nonempty cell
+                if userBoard[row][col] != solvedBoard[row][col]:
+                    errorList.append((row, col))
+    return errorList
+
+def drawRedDot(app,row, col):
+    cellLeft, cellTop = getCellLeftTop(app, row, col)
+    cellWidth, cellHeight = getCellSize(app)
+    drawCircle(cellLeft+0.8*cellWidth, cellTop +0.8*cellHeight, 0.1*cellWidth, fill = 'red')
+
 def drawMsg(app):
     if app.state.gameOver:
-        drawRect(app.boardLeft+app.boardWidth/2, app.boardTop + app.boardHeight/2, 500, 50, align = 'center', fill  = rgb(196, 156, 145))
+        drawRect(app.boardLeft+app.boardWidth/2, app.boardTop + app.boardHeight/2, 500, 50, align = 'center', fill  = rgb(196, 156, 145)) #gameOverColor
         drawLabel('Congrats, you finished the game', app.boardLeft+app.boardWidth/2, app.boardTop + app.boardHeight/2, size = 20, bold = True, fill = 'white') 
-        
+        writeFile(f'doneSolution', getStandardFormat(app.state.userBoard))
+
+def getStandardFormat(board):
+    res = ''
+    for rowList in board:
+        for colCell in rowList:
+            res+=f'{colCell} '
+        res = res[:-1]
+        res+='\n'
+    return res
 
 def drawNumPad(app):
     startTop, w, h = getNumPadInfo(app)
@@ -306,9 +364,9 @@ def getCellColor(app, row, col):
     color = None
     
     if (row, col) == app.selectedCell:
-        color = rgb(183, 202, 241)
+        color = rgb(183, 202, 241) #selectedCellC
     elif row == selectedRow or col == selectedCol:
-        color = rgb (217, 231, 241)
+        color = rgb(217, 231, 241) #selectedRowColColor
     #color the box
     elif isInBox(app, row,col):
         color = rgb (217, 231, 241)#same as prev
@@ -357,5 +415,4 @@ def getCell(app, x, y):
         return None
 
 #modified, originally from https://cs3-112-f22.academy.cs.cmu.edu/notes/4187
-
 

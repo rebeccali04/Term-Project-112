@@ -1,0 +1,9 @@
+{
+'background': None, 
+'emptyCell': None, 
+'initialValsColor':'black',
+'selectedColor': rgb(183, 202, 241),
+'selectedRowColColor': rgb(217, 231, 241),
+'gameOverColor' :rgb(196, 156, 145)),
+'buttonsColor': rgb(196, 156, 145)),
+}

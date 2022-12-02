@@ -1,6 +1,7 @@
 import copy
 from readingInputs import *
 import itertools
+# from boardSolver import boardSolverMain
 
 class State:
     def __init__(self, board):
@@ -13,7 +14,8 @@ class State:
         self.legals = self.getInitalLegals()
         self.setInitalBoard(board)
         self.userLegals =self.getInitalLegals()
-        # self.gameStarted = True
+        self.solvedBoard = None
+        #front will need to set gameStarted to True
         self.undoList = []
         self.redoList = []
 
@@ -207,6 +209,9 @@ class State:
                 return False
         return True
 
+    
+        
+
     def hasNonZeroDup(self, region):
         seenVals = []
         for row, col in region:
@@ -356,6 +361,12 @@ class State:
     def print(self): self.printBoard(); self.printLegals()
 #https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
 
+#
+
+
+
+
+
 def repr2dList(L):
     if (L == []): return '[]'
     output = [ ]
@@ -378,6 +389,10 @@ def repr2dList(L):
         output.append((' ],' if row < rows-1 else ' ]') + '\n')
     output.append(']')
     return ''.join(output)
+
+
+
+
 
 def print2dList(L):
     print(repr2dList(L))

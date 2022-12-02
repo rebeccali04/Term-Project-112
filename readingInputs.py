@@ -74,6 +74,10 @@ def loadRandomBoard(filters=None):
     return getBoardIn2dList(boardPath)
     
 #https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
+def writeFile(path, contents):
+        with open(path, "wt") as f:
+            f.write(contents)
+#https://www.cs.cmu.edu/~112-3/notes/tp-sudoku-hints.html
 
 
 #os.getcwd() from https://stackoverflow.com/questions/5137497/find-the-current-directory-and-files-directory
