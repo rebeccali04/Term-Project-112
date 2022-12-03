@@ -23,7 +23,7 @@ def mainScreen_redrawAll(app):
 
 def drawTitle(app, msg, size =40):
     centerX = app.width/2
-    drawLabel(msg, centerX, 100, size = size, bold = True, fill = rgb(196, 156, 145))
+    drawLabel(msg, centerX, 100, size = size, bold = True, fill = app.settingDict['Titles Color'])
 
 def mainScreen_onMouseMove(app, mouseX, mouseY):
     buttonClickedIndex = getButtonClicked(app.mainScreenButtons, mouseX, mouseY)

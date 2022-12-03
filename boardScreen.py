@@ -158,6 +158,7 @@ def boardScreen_onMouseMove(app, mouseX, mouseY):
         setAllButtonHoverFalse(app.boardScreenButtons)
 
 def boardScreen_redrawAll(app):
+    drawBackground(app)
     boardScreen_drawBoard(app)
     boardScreen_drawBoardBorder(app)
     boardScreen_DrawSectionBoxes(app)
@@ -225,9 +226,9 @@ def drawRedDot(app,row, col):
 
 def drawMsg(app):
     if app.state.gameOver:
-        drawRect(app.boardLeft+app.boardWidth/2, app.boardTop + app.boardHeight/2, 500, 50, align = 'center', fill  = rgb(196, 156, 145)) #gameOverColor
+        drawRect(app.boardLeft+app.boardWidth/2, app.boardTop + app.boardHeight/2, 500, 50, align = 'center', fill  = app.settingDict['Game Over Color']) #gameOverColor
         drawLabel('Congrats, you finished the game', app.boardLeft+app.boardWidth/2, app.boardTop + app.boardHeight/2, size = 20, bold = True, fill = 'white') 
-        writeFile(f'doneSolution', getStandardFormat(app.state.userBoard))
+        writeFile(f'finished.txt', getStandardFormat(app.state.userBoard))
 
 def getStandardFormat(board):
     res = ''
@@ -279,7 +280,7 @@ def drawSudokuNumbers(app, boardToDraw):
     cellWidth, cellHeight = getCellSize(app)
     for row in range(app.state.rows):
         for col in range(app.state.cols):
-            color = rgb(175, 125, 119) if not app.state.cellInOriginalBoard(row,col) else 'black'
+            color = rgb(175, 125, 119) if not app.state.cellInOriginalBoard(row,col) else app.settingDict['Inital Values Color']
             cellLeft, cellTop = getCellLeftTop(app, row, col)
             cellX = cellLeft+cellWidth/2
             cellY = cellTop +cellHeight/2
@@ -324,6 +325,9 @@ def getCellLeftTop(app, row, col):
             cellX = cellLeft+cellWidth/2
             cellY = cellTop +cellHeight/2
 '''
+def drawBackground(app):
+    drawRect(0,0, app.width, app.height, fill = app.settingDict['Background Color'])
+
 def boardScreen_drawBoard(app):
     for row in range(app.state.rows):
         for col in range(app.state.cols):
@@ -361,15 +365,12 @@ def boardScreen_drawCell(app, row, col):
 
 def getCellColor(app, row, col):
     selectedRow, selectedCol = app.selectedCell
-    color = None
+    color = app.settingDict['Empty Cell Color']
     
     if (row, col) == app.selectedCell:
-        color = rgb(183, 202, 241) #selectedCellC
-    elif row == selectedRow or col == selectedCol:
-        color = rgb(217, 231, 241) #selectedRowColColor
-    #color the box
-    elif isInBox(app, row,col):
-        color = rgb (217, 231, 241)#same as prev
+        color = app.settingDict['Selected Cell Color'] #selectedCellC
+    elif  isInBox(app, row,col) or row == selectedRow or col == selectedCol:
+        color = app.settingDict['Selected Region Color'] 
     return color
 
 def getSelectBoxRegion(app, row,col):

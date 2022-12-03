@@ -1,10 +1,7 @@
-{
-'background': None, 
-'emptyCell': None, 
-'initialValsColor':'black',
-'selectedColor': rgb(183, 202, 241),
-'selectedRowColColor': rgb(217, 231, 241),
-'gameOverColor' :rgb(196, 156, 145),
-'buttonsColor': rgb(196, 156, 145),
-'titlesColor' : rgb(196, 156, 145),
-}
+{'Background Color': None,
+ 'Empty Cell Color': None,
+ 'Inital Values Color': 'black',
+ 'Selected Cell Color': rgb(183, 202, 241),
+ 'Selected Region Color': rgb(217, 231, 241),
+ 'Game Over Color': rgb(196, 156, 145),
+ 'Titles Color': rgb(196, 156, 145)}
