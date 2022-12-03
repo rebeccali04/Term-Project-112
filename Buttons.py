@@ -33,3 +33,4 @@ def drawButton1(msg, left, top, hover = False, length=150, height=50, color = rg
 def setButton(buttonList, msg, left, top, hover = False, length=150, height=50):
     buttonDict = {'msg': msg, 'top': top, 'left': left, 'length': length, 'height':height, 'hover': hover}
     buttonList.append(buttonDict)
+

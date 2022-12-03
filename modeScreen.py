@@ -33,7 +33,7 @@ def modeScreen_onMouseMove(app, mouseX, mouseY):
 
 def drawTitle(app, msg, size =40):
     centerX = app.width/2
-    drawLabel(msg, centerX, 150, size = size, bold = True, fill = rgb(196, 156, 145))
+    drawLabel(msg, centerX, 150, size = size, bold = True, fill = rgb(196, 156, 145)) #titlesColor
 
 def modeScreen_onMouseMove(app, mouseX, mouseY):
     buttonClickedIndex = getButtonClicked(app.modeScreenButtons, mouseX, mouseY)

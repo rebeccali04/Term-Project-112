@@ -23,7 +23,7 @@ def mainScreen_redrawAll(app):
 
 def drawTitle(app, msg, size =40):
     centerX = app.width/2
-    drawLabel(msg, centerX, 150, size = size, bold = True, fill = rgb(196, 156, 145))
+    drawLabel(msg, centerX, 100, size = size, bold = True, fill = rgb(196, 156, 145))
 
 def mainScreen_onMouseMove(app, mouseX, mouseY):
     buttonClickedIndex = getButtonClicked(app.mainScreenButtons, mouseX, mouseY)
@@ -42,19 +42,23 @@ def mainScreen_onMousePress(app, mouseX, mouseY):
         setActiveScreen('modeScreen')
     elif buttonClickedIndex ==2:
         setActiveScreen('inputBoardScreen')
-        print('input board')
+        
     elif buttonClickedIndex ==3:
         setActiveScreen('helpScreen')
-        print('how to play')
+        
+    elif buttonClickedIndex ==4:
+        setActiveScreen('preferencesScreen')
+        
 
 #for main screen
 def setAllButtons(app):
     centerX = app.width/2 - 150/2
-    startY = 225
+    startY = 175
     setButton(app.mainScreenButtons, 'Play',centerX , startY,)
     setButton(app.mainScreenButtons, 'Mode', centerX, startY+80*1,)
     setButton(app.mainScreenButtons, 'Input Board', centerX, startY+80*2,)
     setButton(app.mainScreenButtons, 'How to Play', centerX, startY+80*3,)
+    setButton(app.mainScreenButtons, 'Settings', centerX, startY+80*4,)
 
 
 
