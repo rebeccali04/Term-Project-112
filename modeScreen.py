@@ -1,5 +1,4 @@
-try: from cmu_cs3_graphics import *
-except: from cmu_graphics import *
+from cmu_graphics import *
 
 from runAppWithScreens import *
 from Buttons import *
@@ -9,7 +8,7 @@ from boardScreen import *
 # mainScreen
 ##################################
 
-def modeScreen_onScreenStart(app):
+def modeScreen_onAppStart(app):
     app.modeScreenButtons = [] #(msg, top, left, length, height, hover)
     setAllButtons(app)
 

@@ -1,7 +1,6 @@
-try: from cmu_cs3_graphics import *
-except: from cmu_graphics import *
+from cmu_graphics import *
 
-from runAppWithScreens import *
+# from runAppWithScreens import *
 from State import *
 import math
 from readingInputs import *
@@ -14,7 +13,7 @@ from boardSolver import boardSolverMain
 #Todo
 # inputing numbers function
 
-def boardScreen_onScreenStart(app):
+def boardScreen_onAppStart(app):
     app.boardLeft = app.width*0.1
     app.boardTop = app.height*0.15
     boardSideLen = min(app.width*0.8,app.height*0.8)

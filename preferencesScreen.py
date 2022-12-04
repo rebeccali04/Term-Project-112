@@ -1,12 +1,11 @@
-try: from cmu_cs3_graphics import *
-except: from cmu_graphics import *
+from cmu_graphics import *
 
 from runAppWithScreens import *
 from Buttons import *
 from readingInputs import *
 
 
-def preferencesScreen_onScreenStart(app):
+def preferencesScreen_onAppStart(app):
     app.settingDict = eval(readFile("userPreferences.txt")) #overall, used throughout the scree'Background Color'
     app.settingsCategories = list(app.settingDict)
     app.preferencesScreenButtons = [] #(msg, top, left, length, height, hover)

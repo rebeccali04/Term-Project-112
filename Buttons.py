@@ -1,5 +1,4 @@
-try: from cmu_cs3_graphics import *
-except: from cmu_graphics import *
+from cmu_graphics import *
 def getButtonClicked(buttonsList, mouseX, mouseY):
     for index in range(len(buttonsList)):
         button = buttonsList[index]

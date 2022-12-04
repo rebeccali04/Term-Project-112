@@ -1,16 +1,18 @@
-try: from cmu_cs3_graphics import *
-except: from cmu_graphics import *
+from cmu_graphics import *
 
-from runAppWithScreens import *
+# from runAppWithScreens import *
 from Buttons import *
 ##################################
 # mainScreen
 ##################################
 
-def mainScreen_onScreenStart(app):
+def mainScreen_onAppStart(app):
     app.mainScreenButtons = [] #(msg, top, left, length, height, hover)
     setAllButtons(app)
     app.currMode = 'easy'
+
+def mainScreen_onScreenActivate(app):
+    pass
 
 def mainScreen_onKeyPress(app, key):
     if key == 'space': 
