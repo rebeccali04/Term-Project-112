@@ -13,7 +13,7 @@ class State:
         self.userBoard = self.getEmptyBoard()
         self.legals = self.getInitalLegals()
         self.setInitalBoard(board)
-        self.userLegals =self.getInitalLegals()
+        self.userLegals =self.getInitalEmptyLegals()
         self.solvedBoard = None
         #front will need to set gameStarted to True
         self.undoList = []
@@ -29,7 +29,16 @@ class State:
 
     def getEmptyBoard(self): #testing purposes
         return [[0]*9 for _ in range(9)]
-        
+    
+    def getInitalEmptyLegals(self):
+        res = []
+        for _ in range(self.rows):
+            rowList =[]
+            for __ in range(self.cols):
+               rowList.append(set())
+            res.append(rowList)
+        return res 
+
     def getInitalLegals(self):
         res = []
         for _ in range(self.rows):
@@ -245,16 +254,23 @@ class State:
     
 
     #returns the cell to highlight
-    def getHint2(self): #logical error?
-        for N in range(2,5):
+    def getHint2(self): 
+        for N in range(2,6):
             for region in self.getAllRegions():
                 groupings = itertools.combinations(region, N)
                 for group in groupings:
+                    # if group == ((1,7),(2,7)) or group == ((2,7),(1,7)):
+                        # print('found------------------------')
+                        # print(group)
                     legalSet = self.containSameNLegals(group, N) #returns a legal set if yes, none if not
+                        # print('legal Set:')
+                        # print(legalSet)
                     if legalSet !=None:
-                        banGroup = self.getsNewBans(legalSet, group, region)
+                        banGroup = self.getsNewBans(legalSet, group, region) #problem with banGroup
+                        # print(banGroup)
                         if banGroup != None:
-                            return banGroup
+                            
+                            return group
         return None
     
     def playHint2(self): #logical error?
@@ -279,25 +295,32 @@ class State:
         return self.legals[row][col]
 
     def containSameNLegals(self, group , N):
-        legalSet =  self.getLegals(*group[0])
+        legalUnion=set()
+        for row,col in group:
+            legalUnion=legalUnion.union(self.getLegals(row, col))
         #is there even N of them
-        if len(legalSet) != N:
+        if len(legalUnion) != N:
             return None
 
         for row, col in group:
             currLegals = self.getLegals(row,col)
-            if legalSet != currLegals:
+            if legalUnion.intersection(currLegals) == set():
                 return None
-        return copy.copy(legalSet)
+        
+        return copy.copy(legalUnion)
     
+    #check and debug this
     def getsNewBans(self, legalSet, group, region):
         res = []
         for row, col in region: #for each of the cells in the region
             if (row, col) in group: #optional
                 continue #looking for not in group
             currLegals = self.getLegals(row, col)
-            if len(currLegals - legalSet ) ==1:
+            # print(f'row, col are {row,col}')
+            # print(currLegals)
+            if len(currLegals - legalSet ) < len(currLegals):
                 res.append((row,col))
+                # print('appended')
         if res ==[]: return None
         else: return res
 
@@ -433,3 +456,16 @@ def testingState():
     
     print('passed')
 # testingState()
+
+def testHint2():
+    boardPath = loadBoardPaths(['test.txt'])
+    testBlock = State(getBoardIn2dList(boardPath[0]))
+    print(testBlock.getAllRegions())
+    group = ((1,7),(2,7))
+    # res = testBlock.containSameNLegals(group , 2)
+    # print(res)
+    # testBlock.getHint2()
+    region = [(0,7),(1,7),(2,7),(3,7),(4,7),(5,7),(6,7),(7,7),(8,7)]
+    print(testBlock.getsNewBans({1,7}, group, region))
+    
+# testHint2()

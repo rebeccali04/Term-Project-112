@@ -40,11 +40,14 @@ press space to go back
 to set or remove a legal with keyboard hold L and your number
 press space to go back to main screen or go to play screen from main screen
 press 'a' or auto/manual button to toggle manual and auto legals
-on graphics input screen put a 0 to erase input
+press 0 or backspace to erase input
 press m for mouse only mode
 press k for keyboard only mode
 press n for normal mode
 press space to go back to main screen
+press o to highlight hint
+press p to play hint
+
 
     '''
     for line in allMsg.splitlines():

@@ -35,11 +35,10 @@ def restartBoardScreen(app):
     newBoard(app)
     app.selectedCell = (0,0)
     app.inputingLegals =False
-    app.gameOver = False
-    app.state.gameStarted = True
-    app.prevStepLegals = None 
+     
 
 def newBoard(app):
+    
     app.state = State(app.boardContent)
     #move to mode
     if app.currMode == 'easy':
@@ -48,6 +47,11 @@ def newBoard(app):
         app.usingAutoLegals =True
     app.solvedBoard = boardSolverMain(app.state) #will not modify
     setAllButtons(app)
+    app.highlightCells = []
+    app.gameOver = False
+    app.state.gameStarted = True
+    app.prevStepLegals = None
+    app.errorList = []
 
 #optional if switch board
 def loadNewBoard(app, boardContent):
@@ -55,11 +59,18 @@ def loadNewBoard(app, boardContent):
     newBoard(app)
 
 def boardScreen_onKeyPress(app, key):
+    if key == 'j':
+        boardPath = loadBoardPaths(['test.txt'])
+        loadNewBoard(app,getBoardIn2dList(boardPath[0]))
+    if key == 'c':
+        app.competitionMode = not app.competitionMode
     if not app.competitionMode:
         if key == 'o':
             highlightHint(app)
+
         elif key == 'p':
             doHint(app)
+            app.highlightCells = []
         if key =='s' and app.currMode != 'easy':
             #play singleton
             app.state.playHint1()
@@ -84,7 +95,7 @@ def boardScreen_onKeyPress(app, key):
         elif key.isdigit(): #not including 0
             num =int(key)
             doInputNum(app, num)
-        
+
         if key =='l':
             app.inputingLegals =True
         if key =='a': 
@@ -100,14 +111,17 @@ def boardScreen_onKeyPress(app, key):
 
 def doInputNum(app, num):
     row,col = app.selectedCell
-    row,col = app.selectedCell
     app.prevStepLegals = app.state.getLegals(row, col)
     if not app.state.cellInOriginalBoard(row,col):
+        app.highlightCells = []
+       
         if app.inputingLegals: 
             if not app.usingAutoLegals:
                 app.state.inputLegals(row, col, num)
         else:
             app.state.set(row, col,num )
+    findErrors(app, row, col)
+            
     
 
 def moveSelection(app, drow, dcol):
@@ -135,7 +149,6 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
         app.state.playHint1()
     elif buttonClickedIndex ==2:
         restartBoardScreen(app)
-        print('New Game')
     elif buttonClickedIndex ==3:
         app.usingAutoLegals = not app.usingAutoLegals 
 
@@ -158,6 +171,9 @@ def boardScreen_onMouseMove(app, mouseX, mouseY):
         setAllButtonHoverFalse(app.boardScreenButtons)
 
 def boardScreen_redrawAll(app):
+    redrawBoardScreen(app)
+
+def redrawBoardScreen(app):
     drawBackground(app)
     boardScreen_drawBoard(app)
     boardScreen_drawBoardBorder(app)
@@ -166,10 +182,12 @@ def boardScreen_redrawAll(app):
     drawAllLegals(app)
     drawAllButtons(app.boardScreenButtons)
     drawMsg(app)
-    # drawAllRedDot(app)
+    drawAllRedDot(app)
     #mouse only
     if app.currInputMode == 'mouse':
         drawNumPad(app)
+    if app.competitionMode:
+        drawLabel('Competition Mode On', 650, 150)
     ########################################################
     #                      Buttons                         #
     ########################################################
@@ -187,37 +205,44 @@ def setAllButtons(app):
 def highlightHint(app):
     hint1Res = app.state.getHint1()
     if hint1Res != None:
-        row, col = hint1Res
+        app.highlightCells = [hint1Res]
     else:
         hint2Res = app.state.getHint2()
         if hint2Res != None:
-            row, col = hint2Res
+            app.highlightCells = hint2Res
+            # row, col = hint2Res
         else:
+            print('found NO hint')
             return
     #sets app.selection to this cell
-    app.selectedCell = row, col
-        
+    # print('found hint')
+
+    # app.highlightCells = row, col
+
+def doHint(app):
+    if app.state.playHint1() ==None:
+        app.state.playHint2()
 
     ########################################################
     #                      HELPERS                         #
     ########################################################
 def drawAllRedDot(app):
-    #error checking kinda slow?
-    errorList = findErrors(app, app.solvedBoard, app.state.userBoard)
     #competitionMode
-    if app.competitionMode and errorList !=[]:
+    if app.competitionMode and app.errorList !=[]:
+        print('Crashing')
         assert(False) #crash if red
-    for row, col in errorList:
+    for row, col in app.errorList:
         drawRedDot(app, row, col)
 
-def findErrors(app, solvedBoard, userBoard):
-    errorList = []
-    for row in range(app.state.rows):
-        for col in range(app.state.cols):
-            if userBoard[row][col] != 0: #only check nonempty cell
-                if userBoard[row][col] != solvedBoard[row][col]:
-                    errorList.append((row, col))
-    return errorList
+def findErrors(app, row, col):
+    if (row, col) in app.errorList:
+        app.errorList.remove((row,col))
+    else:
+        userVal = app.state.userBoard[row][col]
+        correctVal = app.state.solvedBoard[row][col]
+        if userVal != correctVal:
+            app.errorList.append((row,col))
+    
 
 def drawRedDot(app,row, col):
     cellLeft, cellTop = getCellLeftTop(app, row, col)
@@ -371,6 +396,8 @@ def getCellColor(app, row, col):
         color = app.settingDict['Selected Cell Color'] #selectedCellC
     elif  isInBox(app, row,col) or row == selectedRow or col == selectedCol:
         color = app.settingDict['Selected Region Color'] 
+    if (row,col) in app.highlightCells:
+        color = 'cyan'
     return color
 
 def getSelectBoxRegion(app, row,col):

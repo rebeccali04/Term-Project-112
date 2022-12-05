@@ -8,6 +8,7 @@ from inputBoardScreen import *
 from modeScreen import *
 from helpScreen import *
 from preferencesScreen import *
+from twoPlayerScreen import *
 ##################################
 # main
 ##################################
