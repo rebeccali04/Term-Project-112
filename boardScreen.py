@@ -250,11 +250,12 @@ def drawAllRedDot(app):
 
 def findErrors(app, row, col):
     if (row, col) in app.state.errorList:
-        app.state.errorList.remove((row,col))
+        if app.state.userBoard[row][col] == 0:
+            app.state.errorList.remove((row,col))
     else:
         userVal = app.state.userBoard[row][col]
         correctVal = app.state.solvedBoard[row][col]
-        if userVal != correctVal:
+        if userVal != 0 and userVal != correctVal:
             app.state.errorList.append((row,col))
 
 

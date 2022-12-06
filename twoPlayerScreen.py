@@ -170,9 +170,9 @@ def updateIndividualScore(app):
     currErrors = getNumberOfErrors(app)
     deltaScore = (currCells-baseLineCells) + 2*(currRegions -baseLineRegions) - 0.5*(currErrors - baseLineErrors)
     #actually deduct score for errors
-    print(f'currCells {currCells}')
-    print(f'currRegions {currRegions}')
-    print(f'currErrors {currErrors}')
+    # print(f'currCells {currCells}')
+    # print(f'currRegions {currRegions}')
+    # print(f'currErrors {currErrors}')
     if app.playerTurn ==1:
         app.player1VisibleScore=app.player1Score +deltaScore
         app.player1Score -= 0.5*(currErrors-baseLineErrors)
