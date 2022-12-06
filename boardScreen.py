@@ -51,7 +51,7 @@ def newBoard(app):
     app.gameOver = False
     app.state.gameStarted = True
     app.prevStepLegals = None
-    app.errorList = []
+    app.state.errorList = []
 
 #optional if switch board
 def loadNewBoard(app, boardContent):
@@ -59,6 +59,9 @@ def loadNewBoard(app, boardContent):
     newBoard(app)
 
 def boardScreen_onKeyPress(app, key):
+    boardScreenKeyPress(app, key)
+
+def boardScreenKeyPress(app, key):
     if key == 'j':
         boardPath = loadBoardPaths(['test.txt'])
         loadNewBoard(app,getBoardIn2dList(boardPath[0]))
@@ -75,9 +78,9 @@ def boardScreen_onKeyPress(app, key):
             #play singleton
             app.state.playHint1()
     if key =='u':
-        app.state = app.state.undo()
+        app.state.undo()
     if key == 'r':
-        app.state = app.state.redo()
+        app.state.redo()
     if key == 'h':
         print('help')
         setActiveScreen('helpScreen')
@@ -92,6 +95,8 @@ def boardScreen_onKeyPress(app, key):
         if key == 'space': setActiveScreen('mainScreen')
         if key == 'backspace' or key == '0':
             app.state.undoSet(*app.selectedCell, app.prevStepLegals)
+            if app.selectedCell in app.state.errorList:
+                app.state.errorList.remove(app.selectedCell)
         elif key.isdigit(): #not including 0
             num =int(key)
             doInputNum(app, num)
@@ -138,6 +143,9 @@ def boardScreen_onKeyRelease(app, key):
         app.inputingLegals =False
 
 def boardScreen_onMousePress(app,mouseX, mouseY):
+    boardScreenDoMousePress(app,mouseX, mouseY)
+    
+def boardScreenDoMousePress(app,mouseX, mouseY):
     selectedCell = getCell(app, mouseX, mouseY)
     if selectedCell != None:
       if selectedCell != app.selectedCell:
@@ -164,6 +172,9 @@ def boardScreen_onMousePress(app,mouseX, mouseY):
 
 
 def boardScreen_onMouseMove(app, mouseX, mouseY):
+    boardScreenMouseMove(app,mouseX,mouseY)
+
+def boardScreenMouseMove(app,mouseX,mouseY):
     buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
     if buttonClickedIndex != None:
         app.boardScreenButtons[buttonClickedIndex]['hover'] =True
@@ -228,21 +239,22 @@ def doHint(app):
     ########################################################
 def drawAllRedDot(app):
     #competitionMode
-    if app.competitionMode and app.errorList !=[]:
+    if app.competitionMode and app.state.errorList !=[]:
         print('Crashing')
         assert(False) #crash if red
-    for row, col in app.errorList:
+    for row, col in app.state.errorList:
         drawRedDot(app, row, col)
 
 def findErrors(app, row, col):
-    if (row, col) in app.errorList:
-        app.errorList.remove((row,col))
+    if (row, col) in app.state.errorList:
+        app.state.errorList.remove((row,col))
     else:
         userVal = app.state.userBoard[row][col]
         correctVal = app.state.solvedBoard[row][col]
         if userVal != correctVal:
-            app.errorList.append((row,col))
-    
+            app.state.errorList.append((row,col))
+
+
 
 def drawRedDot(app,row, col):
     cellLeft, cellTop = getCellLeftTop(app, row, col)

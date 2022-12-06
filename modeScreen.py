@@ -60,7 +60,11 @@ def modeScreen_onMousePress(app, mouseX, mouseY):
     elif buttonClickedIndex ==4:
         #evil
         app.currMode = 'evil'
+        
     elif buttonClickedIndex ==5:
+        setActiveScreen('twoPlayerScreen')
+
+    elif buttonClickedIndex ==6:
         #back
         setActiveScreen('mainScreen')
     #was changed load new board
@@ -69,11 +73,13 @@ def modeScreen_onMousePress(app, mouseX, mouseY):
 
 #for main screen
 def setAllButtons(app):
-    centerX = app.width/2 - 150/2
-    startY = 225
-    setButton(app.modeScreenButtons, 'EASY',centerX , startY,)
-    setButton(app.modeScreenButtons, 'MEDIUM', centerX, startY+80*1,)
-    setButton(app.modeScreenButtons, 'HARD', centerX, startY+80*2,)
-    setButton(app.modeScreenButtons, 'EXPERT', centerX, startY+80*3,)
-    setButton(app.modeScreenButtons, 'EVIL', centerX, startY+80*4,)
+    startX = 100
+    centerY = app.height/2 - 50/2
+    setButton(app.modeScreenButtons, 'EASY', startX+200*0, centerY)
+    setButton(app.modeScreenButtons, 'MEDIUM',  startX+200*1, centerY)
+    setButton(app.modeScreenButtons, 'HARD',  startX+200*2, centerY)
+    setButton(app.modeScreenButtons, 'EXPERT',  startX +200*0, centerY+100)
+    setButton(app.modeScreenButtons, 'EVIL',  startX+200*1, centerY+100)
+    setButton(app.modeScreenButtons, '2 Player',  startX+200*2, centerY+100)
     setButton(app.modeScreenButtons, 'Back',50 , 40, length =60, height =40)
+    

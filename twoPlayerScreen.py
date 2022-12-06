@@ -6,90 +6,47 @@ from runAppWithScreens import *
 from Buttons import *
 
 def twoPlayerScreen_onScreenStart(app):
-    pass
+    app.gamePaused = True #should be True in the begining
+    app.twoPlayerButtons = []
+    setButton(app.twoPlayerButtons, 'Start', 550, 40, length =60, height =40)
+    restartGame(app)
+    
+def restartGame(app):
+    app.twoPlayerMsg = ''
+    app.turn = 1 # 1 or 2
+    app.player1Scores = 0
+    app.player2Scores = 0
+    
 
 def twoPlayerScreen_redrawAll(app):
     redrawBoardScreen(app)
+    drawTwoPlayerStats(app)
+    drawAllButtons(app.twoPlayerButtons)
+
 
 def twoPlayerScreen_onKeyPress(app, key):
-    if not app.competitionMode:
-        if key == 'o':
-            highlightHint(app)
-        elif key == 'p':
-            doHint(app)
-        if key =='s' and app.currMode != 'easy':
-            #play singleton
-            app.state.playHint1()
-    if key =='u':
-        app.state = app.state.undo()
-    if key == 'r':
-        app.state = app.state.redo()
-    if key == 'h':
-        print('help')
-        setActiveScreen('helpScreen')
+    boardScreenKeyPress(app, key) 
+    
 
-    if key =='m':
-        app.currInputMode = 'mouse'
-    elif key =='n':
-        app.currInputMode = 'normal'
-    elif key == 'k':
-        app.currInputMode = 'key'
-    if app.currInputMode != 'mouse':
-        if key == 'space': setActiveScreen('mainScreen')
-        if key == 'backspace' or key == '0':
-            app.state.undoSet(*app.selectedCell, app.prevStepLegals)
-        elif key.isdigit(): #not including 0
-            num =int(key)
-            doInputNum(app, num)
-        
-        if key =='l':
-            app.inputingLegals =True
-        if key =='a': 
-            app.usingAutoLegals =not app.usingAutoLegals
-        
-        #up down left right
-        
-        if key == 'left':    moveSelection(app, 0, -1)
-        elif key == 'right': moveSelection(app, 0, +1)
-        elif key == 'up':    moveSelection(app ,-1, 0)
-        elif key == 'down':  moveSelection(app, +1, 0) 
-    #modified, from https://cs3-112-f22.academy.cs.cmu.edu/notes/4189
-
-
-def twoPlayerScreen_onKeyRelease(app, key):
-    if key =='l':
-        app.inputingLegals =False
-
-def twoPlayerScreen_onMousePress(app,mouseX, mouseY):
-    selectedCell = getCell(app, mouseX, mouseY)
-    if selectedCell != None:
-      if selectedCell != app.selectedCell:
-        app.selectedCell = selectedCell
-    buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
-    if buttonClickedIndex ==0:
-        setActiveScreen('mainScreen')
-    elif buttonClickedIndex ==1 and app.currMode != 'easy' and not app.competitionMode:
-        app.state.playHint1()
-    elif buttonClickedIndex ==2:
-        restartBoardScreen(app)
-        print('New Game')
-    elif buttonClickedIndex ==3:
-        app.usingAutoLegals = not app.usingAutoLegals 
-
-    if app.currInputMode == 'mouse':
-        #check for numPad
-        numPadCell = getNumPadCell(app, mouseX, mouseY)
-        if numPadCell!=None:
-            if numPadCell == 0:
-                print('toggle setting legals') #add setting candidate toggle
-                app.inputingLegals = not app.inputingLegals
-            else:
-                doInputNum(app, numPadCell)
-
+def twoPlayerScreen_onMousePress(app,mouseX,mouseY):
+    boardScreenDoMousePress(app,mouseX,mouseY)
+    #for two player specific
+    buttonClickedIndex = getButtonClicked(app.twoPlayerButtons, mouseX, mouseY)
+    if buttonClickedIndex == 0:
+        app.gamePaused = not app.gamePaused
+        if app.gamePaused:
+            app.twoPlayerButtons[0]['msg'] = 'Start'
+        else:
+            app.twoPlayerButtons[0]['msg'] = 'Pause'
 
 def twoPlayerScreen_onMouseMove(app, mouseX, mouseY):
-    buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
+    boardScreenMouseMove(app,mouseX,mouseY)
+    buttonClickedIndex = getButtonClicked(app.twoPlayerButtons, mouseX, mouseY)
     if buttonClickedIndex != None:
-        app.boardScreenButtons[buttonClickedIndex]['hover'] =True
+        app.twoPlayerButtons[buttonClickedIndex]['hover'] =True
     else:
-        setAllButtonHoverFalse(app.boardScreenButtons)
+        setAllButtonHoverFalse(app.twoPlayerButtons)
+
+def drawTwoPlayerStats(app):
+    drawRect(600, 200, 100,200, fill = None)
+    pass

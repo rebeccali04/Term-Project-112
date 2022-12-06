@@ -4,6 +4,7 @@ import itertools
 # from boardSolver import boardSolverMain
 
 class State:
+   
     def __init__(self, board):
         self.gameOver = False
         self.gameStarted = False
@@ -15,9 +16,18 @@ class State:
         self.setInitalBoard(board)
         self.userLegals =self.getInitalEmptyLegals()
         self.solvedBoard = None
+        self.errorList = []
         #front will need to set gameStarted to True
-        self.undoList = []
-        self.redoList = []
+
+        #undo and redo saves
+        self.undoBoardList = []
+        self.undoLegalsList = [] #only the auto legals currently
+        self.undoErrorList = []
+    
+        self.redoBoardList = []
+        self.redoLegalsList = []
+        self.redoErrorList = []
+        
 
     def setInitalBoard(self,board):
         for row in range(self.rows):
@@ -137,8 +147,11 @@ class State:
 
     def set(self, row, col, value):
         #saves prev copy in undoList
+        ######
         if self.gameStarted:
-            self.undoList.append(copy.deepcopy(self))
+            self.undoBoardList.append(copy.deepcopy(self.userBoard))
+            self.undoLegalsList.append(copy.deepcopy(self.legals))
+            self.undoErrorList.append(copy.deepcopy(self.errorList))
 
         # place a value down on the board 
         self.userBoard[row][col] = value
@@ -152,9 +165,10 @@ class State:
                 self.ban(row,col,{value})
         self.checkForGameOver()
 
-        #clears redoList
+        #clears redoList 
+        # ##### 
         if self.gameStarted:
-            self.redoList = []
+            self.redoBoardList, self.redoLegalsList, self.redoErrorList = [], [], []
 
     def banUserLegals(self, row, col, values):
         #gets rid of the legal values in this row col cell
@@ -352,18 +366,46 @@ class State:
 
     #undo and redo
     def undo(self):
-        if self.undoList == []: 
-            return self
-        prevState = self.undoList.pop()
-        prevState.redoList += self.redoList + [self]
-        return prevState
+        if self.undoBoardList != []: 
+            #find board and legals and remove from undo list
+            board = self.undoBoardList.pop()
+            legals = self.undoLegalsList.pop()
+            errors = self.undoErrorList.pop()
+            #store curr one in redo
+            self.redoBoardList.append(copy.deepcopy(self.userBoard))
+            self.redoLegalsList.append(copy.deepcopy(self.legals))
+            self.redoErrorList.append(copy.deepcopy(self.errorList))
+
+            #update board and legals
+            self.userBoard = board
+            self.legals = legals
+            self.errorList = errors
+
+            #test
+            print(self.redoLegalsList)
+            print(f'there are currently {len(self.redoLegalsList)} on the reodLegals')
     
     def redo(self):
-        if self.redoList ==[]:
-            return self
-        futureState = self.redoList.pop()
-        futureState.undoList.append(self)
-        return futureState
+        if self.redoBoardList !=[]:
+            
+            board = self.redoBoardList.pop()
+            legals = self.redoLegalsList.pop()
+            errors = self.redoErrorList.pop()
+
+            #store curr state in undo
+            self.undoBoardList.append(copy.deepcopy(self.userBoard))
+            self.undoLegalsList.append(copy.deepcopy(self.legals))
+            self.undoErrorList.append(copy.deepcopy(self.errorList))
+
+            self.userBoard = board
+            assert(type(self.legals) == list)
+            self.legals = legals
+            self.errorList = errors
+            
+            #test
+            self.printLegals()
+
+
 
 
 #########################################
