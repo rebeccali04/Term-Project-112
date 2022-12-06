@@ -149,9 +149,7 @@ class State:
         #saves prev copy in undoList
         ######
         if self.gameStarted:
-            self.undoBoardList.append(copy.deepcopy(self.userBoard))
-            self.undoLegalsList.append(copy.deepcopy(self.legals))
-            self.undoErrorList.append(copy.deepcopy(self.errorList))
+            self.resetUndoList()
 
         # place a value down on the board 
         self.userBoard[row][col] = value
@@ -168,7 +166,15 @@ class State:
         #clears redoList 
         # ##### 
         if self.gameStarted:
-            self.redoBoardList, self.redoLegalsList, self.redoErrorList = [], [], []
+            self.resetRedoList()
+    
+    def resetUndoList(self):
+        self.undoBoardList.append(copy.deepcopy(self.userBoard))
+        self.undoLegalsList.append(copy.deepcopy(self.legals))
+        self.undoErrorList.append(copy.deepcopy(self.errorList))
+
+    def resetRedoList(self):
+        self.redoBoardList, self.redoLegalsList, self.redoErrorList = [], [], []
 
     def banUserLegals(self, row, col, values):
         #gets rid of the legal values in this row col cell
@@ -381,9 +387,7 @@ class State:
             self.legals = legals
             self.errorList = errors
 
-            #test
-            print(self.redoLegalsList)
-            print(f'there are currently {len(self.redoLegalsList)} on the reodLegals')
+            
     
     def redo(self):
         if self.redoBoardList !=[]:
@@ -474,13 +478,7 @@ def testingState():
     # col =1
     # currLegal = testBlock.legals[row][col]
     # beforeSetLegals = testBlock.legals
-    # print('current legals are' )
-    # print(currLegal)
-    # testBlock.set(row, col, 8)
-    # print('after set')
-    # testBlock.printLegals()
-    # print(testBlock.userBoard)
-    # print('after undo set')
+    
     # testBlock.undoSet(row, col,currLegal)
     # afterUndoSetLegals = testBlock.legals
     # testBlock.printLegals()

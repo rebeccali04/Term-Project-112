@@ -48,7 +48,6 @@ def newBoard(app):
     app.solvedBoard = boardSolverMain(app.state) #will not modify
     setAllButtons(app)
     app.highlightCells = []
-    app.gameOver = False
     app.state.gameStarted = True
     app.prevStepLegals = None
     app.state.errorList = []
@@ -139,17 +138,14 @@ def moveSelection(app, drow, dcol):
 
 
 def boardScreen_onKeyRelease(app, key):
+    boardScreenKeyRelease(app,key)
+
+def boardScreenKeyRelease(app,key):
     if key =='l':
         app.inputingLegals =False
 
 def boardScreen_onMousePress(app,mouseX, mouseY):
-    boardScreenDoMousePress(app,mouseX, mouseY)
     
-def boardScreenDoMousePress(app,mouseX, mouseY):
-    selectedCell = getCell(app, mouseX, mouseY)
-    if selectedCell != None:
-      if selectedCell != app.selectedCell:
-        app.selectedCell = selectedCell
     buttonClickedIndex = getButtonClicked(app.boardScreenButtons, mouseX, mouseY)
     if buttonClickedIndex ==0:
         setActiveScreen('mainScreen')
@@ -159,7 +155,14 @@ def boardScreenDoMousePress(app,mouseX, mouseY):
         restartBoardScreen(app)
     elif buttonClickedIndex ==3:
         app.usingAutoLegals = not app.usingAutoLegals 
-
+    boardScreenDoMousePress(app,mouseX, mouseY)
+    
+def boardScreenDoMousePress(app,mouseX, mouseY):
+    #used by both board screen and 2 player mode
+    selectedCell = getCell(app, mouseX, mouseY)
+    if selectedCell != None:
+      if selectedCell != app.selectedCell:
+        app.selectedCell = selectedCell
     if app.currInputMode == 'mouse':
         #check for numPad
         numPadCell = getNumPadCell(app, mouseX, mouseY)
@@ -182,6 +185,7 @@ def boardScreenMouseMove(app,mouseX,mouseY):
         setAllButtonHoverFalse(app.boardScreenButtons)
 
 def boardScreen_redrawAll(app):
+    drawAllButtons(app.boardScreenButtons)
     redrawBoardScreen(app)
 
 def redrawBoardScreen(app):
@@ -191,7 +195,6 @@ def redrawBoardScreen(app):
     boardScreen_DrawSectionBoxes(app)
     drawSudokuNumbers(app, app.state.userBoard)
     drawAllLegals(app)
-    drawAllButtons(app.boardScreenButtons)
     drawMsg(app)
     drawAllRedDot(app)
     #mouse only

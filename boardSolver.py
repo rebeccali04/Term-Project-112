@@ -11,6 +11,7 @@ def boardSolverMain(stateObject,verbose= True):
     # assert(potentialRes !=None)
     stateObject.solvedBoard = potentialRes
     print('solution found')
+    print(potentialRes)
     return potentialRes
 
 # #cleaning mutating version  working
@@ -184,7 +185,7 @@ def testBacktracker(filters):
         
 def testBoardSolver():
     print('testing')
-    testBacktracker(filters=['hard']) 
+    testBacktracker(filters=['easy-03']) 
     print('done')
 
     # boardName = 'hard-01'
@@ -201,7 +202,7 @@ def testBoardSolver():
     
 def boardSolverTesterWithTime():
     time0 = time.time()
-    boardName = 'evil-01' #taking 9 secs for evil 2
+    boardName = 'easy-03' #taking 9 secs for evil 2
     print(f'testing solver for {boardName}')
     testBlock = State(getBoardIn2dList(boardName+'.png.txt'))
     boardSolverMain(testBlock)
@@ -211,4 +212,4 @@ def boardSolverTesterWithTime():
     print(f'Time is {time1-time0} seconds')
 
 
-# testBoardSolver()
+testBoardSolver()
