@@ -23,8 +23,10 @@ def restartGame(app):
     app.player2Score = 0
     app.player2VisibleScore = app.player2Score
     app.timeLeft = 30 #change to 30
+    app.viewingInstruction =False
     app.currBoardStatus = [0,0,0]
     updateBoardStatus(app)#cells, regions, red dot
+    
     
 def twoPlayerScreen_onStep(app):
     if not app.gamePaused:
@@ -74,16 +76,51 @@ def twoPlayerScreen_redrawAll(app):
     if app.gamePaused:
         drawRect(app.boardLeft, app.boardTop, app.boardWidth, app.boardHeight,
                     fill= app.settingDict['Selected Region Color'], )
-        drawLabel(f'Player {app.playerTurn}, press start to begin', 
-                    app.boardLeft +app.boardWidth/2, app.boardTop +app.boardHeight/2, size =16, bold = True)
+        if app.viewingInstruction:
+            drawTwoPlayerInstructions(app)
+        else:
+            drawLabel(f'Player {app.playerTurn}, press start to begin', 
+                        app.boardLeft +app.boardWidth/2, app.boardTop +app.boardHeight/2, size =16, bold = True)
+            drawLabel('Press i for instructions', 
+                        app.boardLeft +app.boardWidth/2, app.boardTop +app.boardHeight/2 +30, size =14)
+        
     if app.state.gameOver:
-        drawGameOver(app)
+        drawGameOver(app)        
+    
+
+def drawTwoPlayerInstructions(app):
+    instruction = '''
+    Here's the rules:
+    Each player gets 30 seconds to make moves
+    Each correct cell you fill gets you 1 point
+    Each row, column or box you fill gets 
+    you 2 extra points
+    Don't erase previous correct cells 
+    (that will cost you points)
+    Erase any errors ASAP
+    Small hint press 'o' cost 1.5 points
+    Big hint press 'p' cost 2.5 points
+    Press i to view/hide this instruction while paused 
+    Have fun!
+    '''
+    msgs = []
+    for line in instruction.splitlines():
+        if line !='\n':
+            msgs.append(line)
+    for index in range(len(msgs)):
+        msg = msgs[index]
+        y = index*25 +100
+        drawLabel(msg, 100, y, size =16, fill = 'black', align = 'left')
+    
 
 def twoPlayerScreen_onKeyPress(app, key):
     if key == 'o':
         addPointToCurrPlayer(app, -1.5)
     elif key == 'p':
         addPointToCurrPlayer(app, -2.5)
+    elif key == 'i':
+        if app.gamePaused:
+            app.viewingInstruction = not app.viewingInstruction
     boardScreenKeyPress(app, key) 
 
 def twoPlayerScreen_onKeyRelease(app,key):
