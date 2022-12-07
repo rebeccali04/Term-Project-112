@@ -159,7 +159,7 @@ def testFunction():
     settingDict = eval(readFile("userPreferences.txt"))
     print(list(settingDict))
 
-testFunction()
+# testFunction()
 
 '''
 {

@@ -185,11 +185,11 @@ def boardScreenMouseMove(app,mouseX,mouseY):
         setAllButtonHoverFalse(app.boardScreenButtons)
 
 def boardScreen_redrawAll(app):
+    drawBackground(app)
     drawAllButtons(app.boardScreenButtons)
     redrawBoardScreen(app)
 
 def redrawBoardScreen(app):
-    drawBackground(app)
     boardScreen_drawBoard(app)
     boardScreen_drawBoardBorder(app)
     boardScreen_DrawSectionBoxes(app)

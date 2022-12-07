@@ -6,12 +6,9 @@ def boardSolverMain(stateObject,verbose= True):
     assert(isinstance(stateObject, State))
     state =copy.deepcopy(stateObject)
     
-    print('backtracter starting')
     potentialRes =solveBoard(state)
     # assert(potentialRes !=None)
     stateObject.solvedBoard = potentialRes
-    print('solution found')
-    print(potentialRes)
     return potentialRes
 
 # #cleaning mutating version  working
@@ -212,4 +209,4 @@ def boardSolverTesterWithTime():
     print(f'Time is {time1-time0} seconds')
 
 
-testBoardSolver()
+# testBoardSolver()
