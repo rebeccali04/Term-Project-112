@@ -2,14 +2,18 @@ try: from cmu_cs3_graphics import *
 except: from cmu_graphics import *
 
 from runAppWithScreens import *
-from screen1 import *
-from screen2 import *
-
+from mainScreen import *
+from boardScreen import *
+from inputBoardScreen import *
+from modeScreen import *
+from helpScreen import *
+from preferencesScreen import *
+from twoPlayerScreen import *
 ##################################
 # main
 ##################################
 
 def main():
-    runAppWithScreens(initialScreen='screen1', width=800)
+    runAppWithScreens(initialScreen='mainScreen', width=800, height =600)
 
 main()
